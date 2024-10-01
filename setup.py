@@ -607,7 +607,6 @@ def alatty_env(args: Options) -> Env:
     ans.xt_version = '.'.join(map(str, version))
 
     at_least_version('harfbuzz', 1, 5)
-    cflags.extend(pkg_config('libpng', '--cflags-only-I'))
     cflags.extend(pkg_config('lcms2', '--cflags-only-I'))
     # simde doesnt come with pkg-config files but some Linux distros add
     # them and on macOS when building with homebrew it is required
@@ -638,9 +637,8 @@ def alatty_env(args: Options) -> Env:
     platform_libs.extend(pkg_config('harfbuzz', '--libs'))
     pylib = get_python_flags(args, cflags)
     gl_libs = ['-framework', 'OpenGL'] if is_macos else pkg_config('gl', '--libs')
-    libpng = pkg_config('libpng', '--libs')
     lcms2 = pkg_config('lcms2', '--libs')
-    ans.ldpaths += pylib + platform_libs + gl_libs + libpng + lcms2 + libcrypto_ldflags
+    ans.ldpaths += pylib + platform_libs + gl_libs + lcms2 + libcrypto_ldflags
     if is_macos:
         ans.ldpaths.extend('-framework Cocoa'.split())
     elif not is_openbsd:

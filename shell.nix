@@ -22,7 +22,6 @@ in
           Kernel
           OpenGL
           UniformTypeIdentifiers
-          libpng
           python3
           zlib
         ]

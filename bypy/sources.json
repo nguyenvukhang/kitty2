@@ -152,15 +152,6 @@
     },
 
     {
-        "name": "libpng",
-        "unix": {
-            "filename": "libpng-1.6.43.tar.xz",
-            "hash": "sha256:6a5ca0652392a2d7c9db2ae5b40210843c0bbc081cbd410825ab00cc59f14a6c",
-            "urls": ["https://downloads.sourceforge.net/sourceforge/libpng/{filename}"]
-        }
-    },
-
-    {
         "name": "lcms2",
         "unix": {
             "filename": "lcms2-2.16.tar.gz",
