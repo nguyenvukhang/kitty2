@@ -1,5 +1,6 @@
 current:
 	/opt/homebrew/opt/python/libexec/bin/python setup.py alatty.app
+	./alatty.app/Contents/MacOS/alatty
 
 ifdef V
 	VVAL=--verbose

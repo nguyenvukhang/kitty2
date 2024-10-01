@@ -56,9 +56,6 @@ read_from_cache(const GraphicsManager *self, const ImageAndFrame x, void **data,
     char key[CACHE_KEY_BUFFER_SIZE];
     return read_from_disk_cache_simple(self->disk_cache, CK(x), data, sz, false);
 }
-
-static size_t
-cache_size(const GraphicsManager *self) { return disk_cache_total_size(self->disk_cache); }
 #undef CK
 // }}}
 
@@ -1342,14 +1339,6 @@ frame_for_number(Image *img, const uint32_t frame_number) {
     }
 }
 
-static void
-change_gap(Image *img, Frame *f, int32_t gap) {
-    uint32_t prev_gap = f->gap;
-    f->gap = MAX(0, gap);
-    img->animation_duration = prev_gap < img->animation_duration ? img->animation_duration - prev_gap : 0;
-    img->animation_duration += f->gap;
-}
-
 typedef struct {
     uint8_t *buf;
     bool is_4byte_aligned, is_opaque;
@@ -1538,144 +1527,6 @@ update_current_frame(GraphicsManager *self, Image *img, const CoalescedFrameData
     img->current_frame_shown_at = monotonic();
 }
 
-static bool
-reference_chain_too_large(Image *img, const Frame *frame) {
-    uint32_t limit = img->width * img->height * 2;
-    uint32_t drawn_area = frame->width * frame->height;
-    unsigned num = 1;
-    while (drawn_area < limit && num < 5) {
-        if (!frame->base_frame_id || !(frame = frame_for_id(img, frame->base_frame_id))) break;
-        drawn_area += frame->width * frame->height;
-        num++;
-    }
-    return num >= 5 || drawn_area >= limit;
-}
-
-static Image*
-handle_animation_frame_load_command(GraphicsManager *self, GraphicsCommand *g, Image *img, const uint8_t *payload, bool *is_dirty) {
-    uint32_t frame_number = g->frame_number, fmt = g->format ? g->format : RGBA;
-    if (!frame_number || frame_number > img->extra_framecnt + 2) frame_number = img->extra_framecnt + 2;
-    bool is_new_frame = frame_number == img->extra_framecnt + 2;
-    g->frame_number = frame_number;
-    unsigned char tt = g->transmission_type ? g->transmission_type : 'd';
-    if (tt == 'd' && self->currently_loading.loading_for.image_id == img->internal_id) {
-        INIT_CHUNKED_LOAD;
-    } else {
-        self->currently_loading.loading_for = (const ImageAndFrame){0};
-        if (g->data_width > MAX_IMAGE_DIMENSION || g->data_height > MAX_IMAGE_DIMENSION) ABRT("EINVAL", "Image too large");
-        if (!initialize_load_data(self, g, img, tt, fmt, frame_number - 1)) return NULL;
-    }
-    LoadData *load_data = &self->currently_loading;
-    img = load_image_data(self, img, g, tt, fmt, payload);
-    if (!img || !load_data->loading_completed_successfully) return NULL;
-    self->currently_loading.loading_for = (const ImageAndFrame){0};
-    img = process_image_data(self, img, g, tt, fmt);
-    if (!img || !load_data->loading_completed_successfully) return img;
-
-    const unsigned long bytes_per_pixel = load_data->is_opaque ? 3 : 4;
-    if (load_data->data_sz < bytes_per_pixel * load_data->width * load_data->height)
-        ABRT("ENODATA", "Insufficient image data %zu < %zu", load_data->data_sz, bytes_per_pixel * g->data_width, g->data_height);
-    if (load_data->width > img->width)
-        ABRT("EINVAL", "Frame width %u larger than image width: %u", load_data->width, img->width);
-    if (load_data->height > img->height)
-        ABRT("EINVAL", "Frame height %u larger than image height: %u", load_data->height, img->height);
-    if (is_new_frame && cache_size(self) + load_data->data_sz > self->storage_limit * 5) {
-        remove_images(self, trim_predicate, img->internal_id);
-        if (cache_size(self) + load_data->data_sz > self->storage_limit * 5)
-            ABRT("ENOSPC", "Cache size exceeded cannot add new frames");
-    }
-
-    Frame transmitted_frame = {
-        .width = load_data->width, .height = load_data->height,
-        .x = g->x_offset, .y = g->y_offset,
-        .is_4byte_aligned = load_data->is_4byte_aligned,
-        .is_opaque = load_data->is_opaque,
-        .alpha_blend = g->blend_mode != 1 && !load_data->is_opaque,
-        .gap = g->gap > 0 ? g->gap : (g->gap < 0) ? 0 : DEFAULT_GAP,
-        .bgcolor = g->bgcolor,
-    };
-    Frame *frame;
-    if (is_new_frame) {
-        transmitted_frame.id = ++img->frame_id_counter;
-        Frame *frames = realloc(img->extra_frames, sizeof(img->extra_frames[0]) * (img->extra_framecnt + 1));
-        if (!frames) ABRT("ENOMEM", "Out of memory");
-        img->extra_frames = frames;
-        img->extra_framecnt++;
-        frame = img->extra_frames + frame_number - 2;
-        const ImageAndFrame key = { .image_id = img->internal_id, .frame_id = transmitted_frame.id };
-        if (g->other_frame_number) {
-            Frame *other_frame = frame_for_number(img, g->other_frame_number);
-            if (!other_frame) {
-                img->extra_framecnt--;
-                ABRT("EINVAL", "No frame with number: %u found", g->other_frame_number);
-            }
-            if (other_frame->base_frame_id && reference_chain_too_large(img, other_frame)) {
-                // since there is a long reference chain to render this frame, make
-                // it a fully coalesced key frame, for performance
-                CoalescedFrameData cfd = get_coalesced_frame_data(self, img, other_frame);
-                if (!cfd.buf) ABRT("EINVAL", "Failed to get data from frame referenced by frame: %u", frame_number);
-                ComposeData d = {
-                    .over_px_sz = transmitted_frame.is_opaque ? 3 : 4, .under_px_sz = cfd.is_opaque ? 3: 4,
-                    .over_width = transmitted_frame.width, .over_height = transmitted_frame.height,
-                    .over_offset_x = transmitted_frame.x, .over_offset_y = transmitted_frame.y,
-                    .under_width = img->width, .under_height = img->height,
-                    .needs_blending = transmitted_frame.alpha_blend && !transmitted_frame.is_opaque
-                };
-                compose(d, cfd.buf, load_data->data);
-                free_load_data(load_data);
-                load_data->data = cfd.buf; load_data->data_sz = (size_t)img->width * img->height * d.under_px_sz;
-                transmitted_frame.width = img->width; transmitted_frame.height = img->height;
-                transmitted_frame.x = 0; transmitted_frame.y = 0;
-                transmitted_frame.is_4byte_aligned = cfd.is_4byte_aligned;
-                transmitted_frame.is_opaque = cfd.is_opaque;
-            } else {
-                transmitted_frame.base_frame_id = other_frame->id;
-            }
-        }
-        *frame = transmitted_frame;
-        if (!add_to_cache(self, key, load_data->data, load_data->data_sz)) {
-            img->extra_framecnt--;
-            if (PyErr_Occurred()) PyErr_Print();
-            ABRT("ENOSPC", "Failed to cache data for image frame");
-        }
-        img->animation_duration += frame->gap;
-        if (img->animation_state == ANIMATION_LOADING) {
-            self->has_images_needing_animation = true;
-            global_state.check_for_active_animated_images = true;
-        }
-    } else {
-        frame = frame_for_number(img, frame_number);
-        if (!frame) ABRT("EINVAL", "No frame with number: %u found", frame_number);
-        if (g->gap != 0) change_gap(img, frame, transmitted_frame.gap);
-        CoalescedFrameData cfd = get_coalesced_frame_data(self, img, frame);
-        if (!cfd.buf) ABRT("EINVAL", "No data associated with frame number: %u", frame_number);
-        frame->alpha_blend = false; frame->base_frame_id = 0; frame->bgcolor = 0;
-        frame->is_opaque = cfd.is_opaque; frame->is_4byte_aligned = cfd.is_4byte_aligned;
-        frame->x = 0; frame->y = 0; frame->width = img->width; frame->height = img->height;
-        const unsigned bytes_per_pixel = frame->is_opaque ? 3: 4;
-        ComposeData d = {
-            .over_px_sz = transmitted_frame.is_opaque ? 3 : 4, .under_px_sz = bytes_per_pixel,
-            .over_width = transmitted_frame.width, .over_height = transmitted_frame.height,
-            .over_offset_x = transmitted_frame.x, .over_offset_y = transmitted_frame.y,
-            .under_width = frame->width, .under_height = frame->height,
-            .needs_blending = transmitted_frame.alpha_blend && !transmitted_frame.is_opaque
-        };
-        compose(d, cfd.buf, load_data->data);
-        const ImageAndFrame key = { .image_id = img->internal_id, .frame_id = frame->id };
-        bool added = add_to_cache(self, key, cfd.buf, (size_t)bytes_per_pixel * frame->width * frame->height);
-        if (added && frame == current_frame(img)) {
-            update_current_frame(self, img, &cfd);
-            *is_dirty = true;
-        }
-        free(cfd.buf);
-        if (!added) {
-            if (PyErr_Occurred()) PyErr_Print();
-            ABRT("ENOSPC", "Failed to cache data for image frame");
-        }
-    }
-    return img;
-}
-
 #undef ABRT
 
 static Image*
@@ -1721,50 +1572,6 @@ handle_delete_frame_command(GraphicsManager *self, const GraphicsCommand *g, boo
     if (removed_idx == img->current_frame_index) update_current_frame(self, img, NULL);
     else if (removed_idx < img->current_frame_index) img->current_frame_index--;
     return NULL;
-}
-
-static void
-handle_animation_control_command(GraphicsManager *self, bool *is_dirty, const GraphicsCommand *g, Image *img) {
-    if (g->frame_number) {
-        uint32_t frame_idx = g->frame_number - 1;
-        if (frame_idx <= img->extra_framecnt) {
-            Frame *f = frame_idx ? img->extra_frames + frame_idx - 1 : &img->root_frame;
-            if (g->gap) change_gap(img, f, g->gap);
-        }
-    }
-    if (g->other_frame_number) {
-        uint32_t frame_idx = g->other_frame_number - 1;
-        if (frame_idx != img->current_frame_index && frame_idx <= img->extra_framecnt) {
-            img->current_frame_index = frame_idx;
-            *is_dirty = true;
-            update_current_frame(self, img, NULL);
-        }
-    }
-    if (g->animation_state) {
-        AnimationState old_state = img->animation_state;
-        switch(g->animation_state) {
-            case 1:
-                img->animation_state = ANIMATION_STOPPED; break;
-            case 2:
-                img->animation_state = ANIMATION_LOADING; break;
-            case 3:
-                img->animation_state = ANIMATION_RUNNING; break;
-            default:
-                break;
-        }
-        if (img->animation_state == ANIMATION_STOPPED) {
-            img->current_loop = 0;
-        } else {
-            if (old_state == ANIMATION_STOPPED) { img->current_frame_shown_at = monotonic(); img->is_drawn = true; }
-            self->has_images_needing_animation = true;
-            global_state.check_for_active_animated_images = true;
-        }
-        img->current_loop = 0;
-    }
-    if (g->loop_count) {
-        img->max_loops = g->loop_count - 1;
-        global_state.check_for_active_animated_images = true;
-    }
 }
 
 static bool
@@ -2199,31 +2006,6 @@ grman_handle_command(GraphicsManager *self, const GraphicsCommand *g, const uint
             break;
         }
         case 'a':
-        case 'f': {
-            if (!g->id && !g->image_number && !self->currently_loading.loading_for.image_id) {
-                REPORT_ERROR("Add frame data command without image id or number");
-                break;
-            }
-            Image *img;
-            if (self->currently_loading.loading_for.image_id) img = img_by_internal_id(self, self->currently_loading.loading_for.image_id);
-            else img = g->id ? img_by_client_id(self, g->id) : img_by_client_number(self, g->image_number);
-            if (!img) {
-                set_command_failed_response("ENOENT", "Animation command refers to non-existent image with id: %u and number: %u", g->id, g->image_number);
-                ret = finish_command_response(g, false);
-            } else {
-                GraphicsCommand ag = *g;
-                if (ag.action == 'f') {
-                    img = handle_animation_frame_load_command(self, &ag, img, payload, is_dirty);
-                    if (!self->currently_loading.loading_for.image_id) free_load_data(&self->currently_loading);
-                    if (g->quiet) ag.quiet = g->quiet;
-                    else ag.quiet = self->currently_loading.start_command.quiet;
-                    ret = finish_command_response(&ag, img != NULL);
-                } else if (ag.action == 'a') {
-                    handle_animation_control_command(self, is_dirty, &ag, img);
-                }
-            }
-            break;
-        }
         case 'p': {
             if (!g->id && !g->image_number) {
                 REPORT_ERROR("Put graphics command without image id or number");
