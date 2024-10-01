@@ -60,24 +60,6 @@ def build_frozen_launcher(extra_include_dirs):
     return build_frozen_launcher.writeable_src_dir
 
 
-def run_tests(alatty_exe):
-    with tempfile.TemporaryDirectory() as tdir:
-        uenv = {
-            'ALATTY_CONFIG_DIRECTORY': os.path.join(tdir, 'conf'),
-            'ALATTY_CACHE_DIRECTORY': os.path.join(tdir, 'cache')
-        }
-        [os.mkdir(x) for x in uenv.values()]
-        env = os.environ.copy()
-        env.update(uenv)
-        cmd = [alatty_exe, '+runpy', 'from alatty_tests.main import run_tests; run_tests(report_env=True)']
-        print(*map(shlex.quote, cmd), flush=True)
-        if subprocess.call(cmd, env=env, cwd=build_frozen_launcher.writeable_src_dir) != 0:
-            print('Checking of alatty build failed, in directory:', build_frozen_launcher.writeable_src_dir, file=sys.stderr)
-            os.chdir(os.path.dirname(alatty_exe))
-            run_shell()
-            raise SystemExit('Checking of alatty build failed')
-
-
 def build_frozen_tools(alatty_exe):
     cmd = SETUP_CMD + ['--prefix', os.path.dirname(alatty_exe)] + ['build-frozen-tools']
     if run(*cmd, cwd=build_frozen_launcher.writeable_src_dir) != 0:

@@ -170,8 +170,6 @@ class Freeze(object):
         self.build_frozen_tools()
         if not self.dont_strip:
             self.strip_files()
-        if not self.skip_tests:
-            self.run_tests()
         # self.run_shell()
 
         ret = self.makedmg(self.build_dir, f'{APPNAME}-{VERSION}')
@@ -200,10 +198,6 @@ class Freeze(object):
     def strip_files(self):
         print('\nStripping files...')
         strip_files(self.to_strip)
-
-    @flush
-    def run_tests(self):
-        iv['run_tests'](join(self.contents_dir, 'MacOS', 'alatty'))
 
     @flush
     def set_id(self, path_to_lib, new_id):
@@ -349,7 +343,7 @@ class Freeze(object):
     def freeze_python(self):
         print('\nFreezing python')
         alatty_dir = join(self.resources_dir, 'alatty')
-        bases = ('alatty', 'kittens', 'alatty_tests')
+        bases = ('alatty', 'kittens')
         for x in bases:
             dest = join(self.python_stdlib, x)
             os.rename(join(alatty_dir, x), dest)

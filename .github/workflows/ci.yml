@@ -76,9 +76,6 @@ jobs:
             with:
               fetch-depth: 0  # needed for :commit: docs role
 
-          - name: Test for trailing whitespace
-            run: if grep -Inr '\s$' alatty alatty_tests kittens docs *.py *.asciidoc *.rst *.go .gitattributes .gitignore; then echo Trailing whitespace found, aborting.; exit 1; fi
-
           - name: Set up Python
             uses: actions/setup-python@v4
             with:

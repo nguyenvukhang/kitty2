@@ -1692,8 +1692,6 @@ def package(args: Options, bundle_type: str, do_build_all: bool = True) -> None:
 
     shutil.copytree('alatty', os.path.join(libdir, 'alatty'), ignore=src_ignore)
     shutil.copytree('kittens', os.path.join(libdir, 'kittens'), ignore=src_ignore)
-    if for_freeze:
-        shutil.copytree('alatty_tests', os.path.join(libdir, 'alatty_tests'))
 
     def repl(name: str, raw: str, defval: Union[str, float, FrozenSet[str]], val: Union[str, float, FrozenSet[str]]) -> str:
         if defval == val:

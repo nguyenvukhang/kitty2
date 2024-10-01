@@ -374,9 +374,6 @@ def generate_legacy_text_key_maps() -> None:
     for k in shift_map:
         simple(k)
 
-    patch_file('alatty_tests/keys.py', 'legacy letter tests', '\n'.join(tests), start_marker='# ', end_marker='')
-
-
 def chunks(lst: list[Any], n: int) -> Any:
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):

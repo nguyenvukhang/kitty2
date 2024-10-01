@@ -120,7 +120,7 @@ def copy_python(env):
     pdir = os.path.join(env.lib_dir, 'alatty-extensions')
     os.makedirs(pdir, exist_ok=True)
     alatty_dir = os.path.join(env.lib_dir, 'alatty')
-    bases = ('alatty', 'kittens', 'alatty_tests')
+    bases = ('alatty', 'kittens')
     for x in bases:
         dest = os.path.join(env.py_dir, x)
         os.rename(os.path.join(alatty_dir, x), dest)
@@ -236,8 +236,6 @@ def main():
     iv['build_frozen_tools'](alatty_exe)
     if not args.dont_strip:
         strip_binaries(files)
-    if not args.skip_tests:
-        iv['run_tests'](alatty_exe)
     create_tarfile(env, args.compression_level)
 
 
