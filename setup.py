@@ -859,7 +859,7 @@ def add_builtin_fonts(args: Options) -> None:
     os.makedirs(fonts_dir, exist_ok=True)
 
     for psname, (filename, human_name) in {
-        'SymbolsNFM': ('SymbolsNerdFontMono-Regular.ttf', 'Symbols NERD Font Mono')
+        'JetBrainsOneV5': ('JetBrainsOneV5-Semibold.ttf', 'JetBrainsOneV5')
     }.items():
         dest = os.path.join(fonts_dir, filename)
         if os.path.exists(dest):
