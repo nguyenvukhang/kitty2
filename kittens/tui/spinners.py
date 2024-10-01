@@ -3,8 +3,8 @@
 
 from typing import Dict, Sequence
 
-from kitty.fast_data_types import monotonic
-from kitty.typing import TypedDict
+from alatty.fast_data_types import monotonic
+from alatty.typing import TypedDict
 
 
 class SpinnerDef(TypedDict):

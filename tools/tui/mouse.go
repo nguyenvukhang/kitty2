@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"kitty"
-	"kitty/tools/config"
-	"kitty/tools/tui/loop"
-	"kitty/tools/utils"
+	"alatty"
+	"alatty/tools/config"
+	"alatty/tools/tui/loop"
+	"alatty/tools/utils"
 )
 
 var _ = fmt.Print
@@ -268,8 +268,8 @@ func (m *MouseState) ApplyHoverStyles(lp *loop.Loop, style ...string) {
 	if len(style) == 0 {
 		if !m.default_url_style.loaded {
 			m.default_url_style.loaded = true
-			conf := filepath.Join(utils.ConfigDir(), "kitty.conf")
-			color, style := kitty.DefaultUrlColor, kitty.DefaultUrlStyle
+			conf := filepath.Join(utils.ConfigDir(), "alatty.conf")
+			color, style := alatty.DefaultUrlColor, alatty.DefaultUrlStyle
 			cp := config.ConfigParser{LineHandler: func(key, val string) error {
 				switch key {
 				case "url_color":

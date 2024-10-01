@@ -1,5 +1,5 @@
 current:
-	/opt/homebrew/opt/python/libexec/bin/python setup.py kitty.app
+	/opt/homebrew/opt/python/libexec/bin/python setup.py alatty.app
 
 ifdef V
 	VVAL=--verbose
@@ -36,7 +36,7 @@ profile:
 	python3 setup.py build $(VVAL) --profile
 
 app:
-	python3 setup.py kitty.app $(VVAL)
+	python3 setup.py alatty.app $(VVAL)
 
 linux-package: FORCE
 	rm -rf linux-package

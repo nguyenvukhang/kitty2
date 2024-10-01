@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"strings"
 
-	"kitty/tools/tui"
-	"kitty/tools/tui/loop"
-	"kitty/tools/tui/readline"
-	"kitty/tools/utils"
+	"alatty/tools/tui"
+	"alatty/tools/tui/loop"
+	"alatty/tools/tui/readline"
+	"alatty/tools/utils"
 )
 
 var _ = fmt.Print

@@ -22,12 +22,12 @@ import (
 	"sync"
 	"time"
 
-	"kitty/tools/cli"
-	"kitty/tools/config"
-	"kitty/tools/tui/loop"
-	"kitty/tools/tui/subseq"
-	"kitty/tools/utils"
-	"kitty/tools/utils/style"
+	"alatty/tools/cli"
+	"alatty/tools/config"
+	"alatty/tools/tui/loop"
+	"alatty/tools/tui/subseq"
+	"alatty/tools/utils"
+	"alatty/tools/utils/style"
 )
 
 var _ = fmt.Print
@@ -451,7 +451,7 @@ func fetch_cached(name, url, cache_path string, max_cache_age time.Duration) (st
 }
 
 func FetchCached(max_cache_age time.Duration) (string, error) {
-	return fetch_cached("kitty-themes", "https://codeload.github.com/kovidgoyal/kitty-themes/zip/master", utils.CacheDir(), max_cache_age)
+	return fetch_cached("alatty-themes", "https://codeload.github.com/kovidgoyal/alatty-themes/zip/master", utils.CacheDir(), max_cache_age)
 }
 
 type ThemeMetadata struct {
@@ -467,7 +467,7 @@ type ThemeMetadata struct {
 
 func ParseThemeMetadata(path string) (*ThemeMetadata, map[string]string, error) {
 	var in_metadata, in_blurb, finished_metadata bool
-	ans := ThemeMetadata{Is_dark: true} // the default background in kitty is dark
+	ans := ThemeMetadata{Is_dark: true} // the default background in alatty is dark
 	settings := map[string]string{}
 
 	read_is_dark := func(key, val string) (err error) {
@@ -603,15 +603,15 @@ func (self *Theme) SaveInConf(config_dir, reload_in, config_file_name string) (e
 	}
 	patcher := config.Patcher{Write_backup: true}
 	if _, err = patcher.Patch(
-		confpath, "KITTY_THEME", fmt.Sprintf("# %s\ninclude current-theme.conf", self.metadata.Name),
+		confpath, "ALATTY_THEME", fmt.Sprintf("# %s\ninclude current-theme.conf", self.metadata.Name),
 		utils.Keys(AllColorSettingNames)...); err != nil {
 		return
 	}
 	switch reload_in {
 	case "parent":
-		config.ReloadConfigInKitty(true)
+		config.ReloadConfigInAlatty(true)
 	case "all":
-		config.ReloadConfigInKitty(false)
+		config.ReloadConfigInAlatty(false)
 	}
 	return
 }
@@ -772,7 +772,7 @@ func (self *Themes) add_from_dir(dirpath string) error {
 		if !e.IsDir() && strings.HasSuffix(e.Name(), ".conf") {
 			path := filepath.Join(dirpath, e.Name())
 			// ignore files if they are the STDOUT of the current processes
-			// allows using kitten theme --dump-theme name > ~/.config/kitty/themes/name.conf
+			// allows using kitten theme --dump-theme name > ~/.config/alatty/themes/name.conf
 			if utils.Samefile(path, os.Stdout) {
 				continue
 			}

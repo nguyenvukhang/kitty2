@@ -2,7 +2,7 @@ package choose_fonts
 
 import (
 	"fmt"
-	"kitty/tools/utils"
+	"alatty/tools/utils"
 	"slices"
 	"strings"
 )

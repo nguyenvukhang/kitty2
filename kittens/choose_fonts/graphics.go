@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"kitty/tools/tui/graphics"
-	"kitty/tools/tui/loop"
-	"kitty/tools/utils"
+	"alatty/tools/tui/graphics"
+	"alatty/tools/tui/loop"
+	"alatty/tools/utils"
 )
 
 var _ = fmt.Print

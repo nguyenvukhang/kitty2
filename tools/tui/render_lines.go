@@ -6,19 +6,19 @@ import (
 	"strings"
 	"sync"
 
-	"kitty/tools/tui/loop"
-	"kitty/tools/utils"
-	"kitty/tools/utils/style"
-	"kitty/tools/wcswidth"
+	"alatty/tools/tui/loop"
+	"alatty/tools/utils"
+	"alatty/tools/utils/style"
+	"alatty/tools/wcswidth"
 )
 
 var _ = fmt.Print
 var _ = utils.Repr
 
-const KittyInternalHyperlinkProtocol = "kitty-ih"
+const AlattyInternalHyperlinkProtocol = "alatty-ih"
 
 func InternalHyperlink(text, id string) string {
-	return fmt.Sprintf("\x1b]8;;%s:%s\x1b\\%s\x1b]8;;\x1b\\", KittyInternalHyperlinkProtocol, id, text)
+	return fmt.Sprintf("\x1b]8;;%s:%s\x1b\\%s\x1b]8;;\x1b\\", AlattyInternalHyperlinkProtocol, id, text)
 }
 
 type RenderLines struct {
@@ -80,8 +80,8 @@ func (r RenderLines) InRectangle(
 			}
 		} else {
 			commit_hyperlink()
-			if strings.HasPrefix(url, KittyInternalHyperlinkProtocol+":") {
-				start_hyperlink(url[len(KittyInternalHyperlinkProtocol)+1:])
+			if strings.HasPrefix(url, AlattyInternalHyperlinkProtocol+":") {
+				start_hyperlink(url[len(AlattyInternalHyperlinkProtocol)+1:])
 			} else {
 				buf.WriteString(fmt.Sprintf("\x1b]8;%s;%s\x1b\\", id, url))
 			}

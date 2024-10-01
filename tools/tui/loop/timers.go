@@ -7,8 +7,8 @@ import (
 	"slices"
 	"time"
 
-	"kitty/tools/tty"
-	"kitty/tools/utils"
+	"alatty/tools/tty"
+	"alatty/tools/utils"
 )
 
 var debugprintln = tty.DebugPrintln

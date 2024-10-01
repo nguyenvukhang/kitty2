@@ -7,8 +7,8 @@ import (
 	"slices"
 	"strings"
 
-	"kitty/tools/utils"
-	"kitty/tools/utils/images"
+	"alatty/tools/utils"
+	"alatty/tools/utils/images"
 )
 
 var _ = fmt.Print

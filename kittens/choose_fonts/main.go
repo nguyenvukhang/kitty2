@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"kitty/tools/cli"
-	"kitty/tools/tty"
-	"kitty/tools/tui/loop"
+	"alatty/tools/cli"
+	"alatty/tools/tty"
+	"alatty/tools/tui/loop"
 )
 
 var _ = fmt.Print
@@ -14,11 +14,11 @@ var debugprintln = tty.DebugPrintln
 var output_on_exit string
 
 func main(opts *Options) (rc int, err error) {
-	if err = kitty_font_backend.start(); err != nil {
+	if err = alatty_font_backend.start(); err != nil {
 		return 1, err
 	}
 	defer func() {
-		if werr := kitty_font_backend.release(); werr != nil {
+		if werr := alatty_font_backend.release(); werr != nil {
 			if err == nil {
 				err = werr
 			}
@@ -35,7 +35,7 @@ func main(opts *Options) (rc int, err error) {
 	h := &handler{lp: lp, opts: opts}
 	lp.OnInitialize = func() (string, error) {
 		lp.AllowLineWrapping(false)
-		lp.SetWindowTitle(`Choose a font for kitty`)
+		lp.SetWindowTitle(`Choose a font for alatty`)
 		return "", h.initialize()
 	}
 	lp.OnWakeup = h.on_wakeup
@@ -74,7 +74,7 @@ type Options struct {
 func EntryPoint(root *cli.Command) {
 	ans := root.AddSubCommand(&cli.Command{
 		Name:             "choose-fonts",
-		ShortDescription: "Choose the fonts used in kitty",
+		ShortDescription: "Choose the fonts used in alatty",
 		Run: func(cmd *cli.Command, args []string) (rc int, err error) {
 			opts := Options{}
 			if err = cmd.GetOptionValues(&opts); err != nil {
@@ -89,9 +89,9 @@ func EntryPoint(root *cli.Command) {
 		Type:    "choices",
 		Choices: "parent, all, none",
 		Default: "parent",
-		Help: `By default, this kitten will signal only the parent kitty instance it is
+		Help: `By default, this kitten will signal only the parent alatty instance it is
 running in to reload its config, after making changes. Use this option to
-instead either not reload the config at all or in all running kitty instances.`,
+instead either not reload the config at all or in all running alatty instances.`,
 	})
 	clone := root.AddClone(ans.Group, ans)
 	clone.Hidden = false

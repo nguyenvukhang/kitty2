@@ -2,10 +2,10 @@ package choose_fonts
 
 import (
 	"fmt"
-	"kitty/tools/tui"
-	"kitty/tools/tui/subseq"
-	"kitty/tools/utils"
-	"kitty/tools/wcswidth"
+	"alatty/tools/tui"
+	"alatty/tools/tui/subseq"
+	"alatty/tools/utils"
+	"alatty/tools/wcswidth"
 )
 
 var _ = fmt.Print

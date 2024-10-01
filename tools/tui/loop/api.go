@@ -13,10 +13,10 @@ import (
 
 	"golang.org/x/sys/unix"
 
-	"kitty/tools/tty"
-	"kitty/tools/utils"
-	"kitty/tools/utils/style"
-	"kitty/tools/wcswidth"
+	"alatty/tools/tty"
+	"alatty/tools/utils"
+	"alatty/tools/utils/style"
+	"alatty/tools/wcswidth"
 )
 
 type ScreenSize struct {
@@ -143,30 +143,30 @@ func NoAlternateScreen(self *Loop) {
 }
 
 func (self *Loop) OnlyDisambiguateKeys() *Loop {
-	self.terminal_options.kitty_keyboard_mode = DISAMBIGUATE_KEYS
+	self.terminal_options.alatty_keyboard_mode = DISAMBIGUATE_KEYS
 	return self
 }
 
 func OnlyDisambiguateKeys(self *Loop) {
-	self.terminal_options.kitty_keyboard_mode = DISAMBIGUATE_KEYS
+	self.terminal_options.alatty_keyboard_mode = DISAMBIGUATE_KEYS
 }
 
 func (self *Loop) NoKeyboardStateChange() *Loop {
-	self.terminal_options.kitty_keyboard_mode = NO_KEYBOARD_STATE_CHANGE
+	self.terminal_options.alatty_keyboard_mode = NO_KEYBOARD_STATE_CHANGE
 	return self
 }
 
 func NoKeyboardStateChange(self *Loop) {
-	self.terminal_options.kitty_keyboard_mode = NO_KEYBOARD_STATE_CHANGE
+	self.terminal_options.alatty_keyboard_mode = NO_KEYBOARD_STATE_CHANGE
 }
 
 func (self *Loop) FullKeyboardProtocol() *Loop {
-	self.terminal_options.kitty_keyboard_mode = FULL_KEYBOARD_PROTOCOL
+	self.terminal_options.alatty_keyboard_mode = FULL_KEYBOARD_PROTOCOL
 	return self
 }
 
 func FullKeyboardProtocol(self *Loop) {
-	self.terminal_options.kitty_keyboard_mode = FULL_KEYBOARD_PROTOCOL
+	self.terminal_options.alatty_keyboard_mode = FULL_KEYBOARD_PROTOCOL
 }
 
 func (self *Loop) MouseTrackingMode(mt MouseTracking) *Loop {
@@ -503,7 +503,7 @@ func (self *Loop) QueryTerminal(fields ...string) IdType {
 	}
 	q := make([]string, len(fields))
 	for i, x := range fields {
-		q[i] = hex.EncodeToString(utils.UnsafeStringToBytes("kitty-query-" + x))
+		q[i] = hex.EncodeToString(utils.UnsafeStringToBytes("alatty-query-" + x))
 	}
 	return self.QueueWriteString(fmt.Sprintf("\x1bP+q%s\a", strings.Join(q, ";")))
 }

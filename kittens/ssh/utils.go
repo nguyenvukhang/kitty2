@@ -12,9 +12,9 @@ import (
 	"strings"
 	"sync"
 
-	"kitty"
-	"kitty/tools/config"
-	"kitty/tools/utils"
+	"alatty"
+	"alatty/tools/config"
+	"alatty/tools/utils"
 )
 
 var _ = fmt.Print
@@ -221,12 +221,12 @@ var GetSSHVersion = sync.OnceValue(func() SSHVersion {
 	return SSHVersion{}
 })
 
-type KittyOpts struct {
+type AlattyOpts struct {
 	Term, Shell_integration string
 }
 
-func read_relevant_kitty_opts(path string) KittyOpts {
-	ans := KittyOpts{Term: kitty.KittyConfigDefaults.Term, Shell_integration: kitty.KittyConfigDefaults.Shell_integration}
+func read_relevant_alatty_opts(path string) AlattyOpts {
+	ans := AlattyOpts{Term: alatty.AlattyConfigDefaults.Term, Shell_integration: alatty.AlattyConfigDefaults.Shell_integration}
 	handle_line := func(key, val string) error {
 		switch key {
 		case "term":
@@ -241,6 +241,6 @@ func read_relevant_kitty_opts(path string) KittyOpts {
 	return ans
 }
 
-var RelevantKittyOpts = sync.OnceValue(func() KittyOpts {
-	return read_relevant_kitty_opts(filepath.Join(utils.ConfigDir(), "kitty.conf"))
+var RelevantAlattyOpts = sync.OnceValue(func() AlattyOpts {
+	return read_relevant_alatty_opts(filepath.Join(utils.ConfigDir(), "alatty.conf"))
 })

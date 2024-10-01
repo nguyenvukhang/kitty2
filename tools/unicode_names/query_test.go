@@ -4,7 +4,7 @@ package unicode_names
 
 import (
 	"fmt"
-	"kitty/tools/utils"
+	"alatty/tools/utils"
 	"slices"
 	"testing"
 

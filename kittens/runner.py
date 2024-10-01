@@ -9,14 +9,14 @@ from contextlib import contextmanager
 from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, Dict, FrozenSet, Generator, List, NamedTuple, Optional, cast
 
-from kitty.constants import list_kitty_resources
-from kitty.types import run_once
-from kitty.typing import BossType, WindowType
-from kitty.utils import resolve_abs_or_config_path
+from alatty.constants import list_alatty_resources
+from alatty.types import run_once
+from alatty.typing import BossType, WindowType
+from alatty.utils import resolve_abs_or_config_path
 
 aliases = {'url_hints': 'hints'}
 if TYPE_CHECKING:
-    from kitty.conf.types import Definition
+    from alatty.conf.types import Definition
 else:
     Definition = object
 
@@ -84,7 +84,7 @@ class KittenMetadata(NamedTuple):
 
 
 def create_kitten_handler(kitten: str, orig_args: List[str]) -> KittenMetadata:
-    from kitty.constants import config_dir
+    from alatty.constants import config_dir
     kitten = resolved_kitten(kitten)
     m = import_kitten_main_module(config_dir, kitten)
     handle_result = m['end']
@@ -108,7 +108,7 @@ def launch(args: List[str]) -> None:
     kitten = resolved_kitten(kitten)
     del args[:2]
     args = [kitten] + args
-    os.environ['KITTY_CONFIG_DIRECTORY'] = config_dir
+    os.environ['ALATTY_CONFIG_DIRECTORY'] = config_dir
     set_debug(kitten)
     m = import_kitten_main_module(config_dir, kitten)
     try:
@@ -137,7 +137,7 @@ def run_kitten(kitten: str, run_name: str = '__main__') -> None:
     # Look for a custom kitten
     if not kitten.endswith('.py'):
         kitten += '.py'
-    from kitty.constants import config_dir
+    from alatty.constants import config_dir
     path = path_to_custom_kitten(config_dir, kitten)
     if not os.path.exists(path):
         print('Available builtin kittens:', file=sys.stderr)
@@ -145,7 +145,7 @@ def run_kitten(kitten: str, run_name: str = '__main__') -> None:
             print(kitten, file=sys.stderr)
         raise SystemExit(f'No kitten named {original_kitten_name}')
     m = runpy.run_path(path, init_globals={'sys': sys, 'os': os}, run_name='__run_kitten__')
-    from kitty.fast_data_types import set_options
+    from alatty.fast_data_types import set_options
     try:
         m['main'](sys.argv)
     finally:
@@ -155,7 +155,7 @@ def run_kitten(kitten: str, run_name: str = '__main__') -> None:
 @run_once
 def all_kitten_names() -> FrozenSet[str]:
     ans = []
-    for name in list_kitty_resources('kittens'):
+    for name in list_alatty_resources('kittens'):
         if '__' not in name and '.' not in name and name != 'tui':
             ans.append(name)
     return frozenset(ans)

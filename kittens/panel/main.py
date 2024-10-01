@@ -4,10 +4,10 @@
 import sys
 from typing import Any, Callable, Dict, List, Tuple
 
-from kitty.cli import parse_args
-from kitty.cli_stub import PanelCLIOptions
-from kitty.constants import appname, is_macos, is_wayland
-from kitty.fast_data_types import (
+from alatty.cli import parse_args
+from alatty.cli_stub import PanelCLIOptions
+from alatty.constants import appname, is_macos, is_wayland
+from alatty.fast_data_types import (
     GLFW_EDGE_BOTTOM,
     GLFW_EDGE_LEFT,
     GLFW_EDGE_RIGHT,
@@ -17,9 +17,9 @@ from kitty.fast_data_types import (
     glfw_primary_monitor_size,
     make_x11_window_a_dock_window,
 )
-from kitty.os_window_size import WindowSizeData, edge_spacing
-from kitty.types import LayerShellConfig
-from kitty.typing import EdgeLiteral
+from alatty.os_window_size import WindowSizeData, edge_spacing
+from alatty.types import LayerShellConfig
+from alatty.typing import EdgeLiteral
 
 OPTIONS = r'''
 --lines --columns
@@ -41,13 +41,13 @@ kitten.
 
 --config -c
 type=list
-Path to config file to use for kitty when drawing the panel.
+Path to config file to use for alatty when drawing the panel.
 
 
 --override -o
 type=list
-Override individual kitty configuration options, can be specified multiple times.
-Syntax: :italic:`name=value`. For example: :option:`kitty +kitten panel -o` font_size=20
+Override individual alatty configuration options, can be specified multiple times.
+Syntax: :italic:`name=value`. For example: :option:`alatty +kitten panel -o` font_size=20
 
 
 --output-name
@@ -80,7 +80,7 @@ usage = 'program-to-run'
 
 
 def parse_panel_args(args: List[str]) -> Tuple[PanelCLIOptions, List[str]]:
-    return parse_args(args, OPTIONS, usage, help_text, 'kitty +kitten panel', result_class=PanelCLIOptions)
+    return parse_args(args, OPTIONS, usage, help_text, 'alatty +kitten panel', result_class=PanelCLIOptions)
 
 
 Strut = Tuple[int, int, int, int, int, int, int, int, int, int, int, int]
@@ -162,7 +162,7 @@ def main(sys_args: List[str]) -> None:
     args, items = parse_panel_args(sys_args[1:])
     if not items:
         raise SystemExit('You must specify the program to run')
-    sys.argv = ['kitty']
+    sys.argv = ['alatty']
     if args.debug_rendering:
         sys.argv.append('--debug-rendering')
     for config in args.config:
@@ -174,8 +174,8 @@ def main(sys_args: List[str]) -> None:
         sys.argv.extend(('--override', override))
     sys.argv.append('--override=linux_display_server=auto')
     sys.argv.extend(items)
-    from kitty.main import main as real_main
-    from kitty.main import run_app
+    from alatty.main import main as real_main
+    from alatty.main import run_app
     run_app.cached_values_name = 'panel'
     run_app.layer_shell_config = layer_shell_config(args)
     run_app.first_window_callback = setup_x11_window

@@ -40,7 +40,7 @@ activity, CPU load, date/time, etc.
 
 Using this kitten is simple, for example::
 
-    kitty +kitten panel sh -c 'printf "\n\n\nHello, world."; sleep 5s'
+    alatty +kitten panel sh -c 'printf "\n\n\nHello, world."; sleep 5s'
 
 This will show ``Hello, world.`` at the top edge of your screen for five
 seconds. Here, the terminal program we are running is :program:`sh` with a script
@@ -49,7 +49,7 @@ you like, as demonstrated in the screenshot above.
 
 If you are on Wayland, you can, for instance run::
 
-    kitty +kitten panel --edge=background htop
+    alatty +kitten panel --edge=background htop
 
 to display htop as your desktop background. Remember this works in everything
 but GNOME and also, in sway, you have to disable the background wallpaper as

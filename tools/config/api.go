@@ -17,7 +17,7 @@ import (
 	"strings"
 	"sync"
 
-	"kitty/tools/utils"
+	"alatty/tools/utils"
 
 	"github.com/shirou/gopsutil/v3/process"
 	"golang.org/x/sys/unix"
@@ -223,7 +223,7 @@ func (self *ConfigParser) ParseFiles(paths ...string) error {
 }
 
 func (self *ConfigParser) LoadConfig(name string, paths []string, overrides []string) (err error) {
-	const SYSTEM_CONF = "/etc/xdg/kitty"
+	const SYSTEM_CONF = "/etc/xdg/alatty"
 	system_conf := filepath.Join(SYSTEM_CONF, name)
 	add_if_exists := func(q string) {
 		err = self.ParseFiles(q)
@@ -280,11 +280,11 @@ func (self *ConfigParser) ParseOverrides(overrides ...string) error {
 	return self.parse(&s, "<overrides>", utils.ConfigDir(), 0)
 }
 
-func is_kitty_gui_cmdline(exe string, cmd ...string) bool {
+func is_alatty_gui_cmdline(exe string, cmd ...string) bool {
 	if len(cmd) == 0 {
 		return false
 	}
-	if filepath.Base(exe) != "kitty" {
+	if filepath.Base(exe) != "alatty" {
 		return false
 	}
 	if len(cmd) == 1 {
@@ -350,12 +350,12 @@ func (self Patcher) Patch(path, sentinel, content string, settings_to_comment_ou
 	return false, nil
 }
 
-func ReloadConfigInKitty(in_parent_only bool) error {
+func ReloadConfigInAlatty(in_parent_only bool) error {
 	if in_parent_only {
-		if pid, err := strconv.Atoi(os.Getenv("KITTY_PID")); err == nil {
+		if pid, err := strconv.Atoi(os.Getenv("ALATTY_PID")); err == nil {
 			if p, err := process.NewProcess(int32(pid)); err == nil {
 				if exe, eerr := p.Exe(); eerr == nil {
-					if c, err := p.CmdlineSlice(); err == nil && is_kitty_gui_cmdline(exe, c...) {
+					if c, err := p.CmdlineSlice(); err == nil && is_alatty_gui_cmdline(exe, c...) {
 						return p.SendSignal(unix.SIGUSR1)
 					}
 				}
@@ -371,10 +371,10 @@ func ReloadConfigInKitty(in_parent_only bool) error {
 		for _, line := range utils.Splitlines(utils.UnsafeBytesToString(ps_out)) {
 			line = strings.TrimSpace(line)
 			if pid_string, argv0, found := strings.Cut(line, " "); found {
-				if pid, err := strconv.Atoi(strings.TrimSpace(pid_string)); err == nil && strings.Contains(argv0, "kitty") {
+				if pid, err := strconv.Atoi(strings.TrimSpace(pid_string)); err == nil && strings.Contains(argv0, "alatty") {
 					if p, err := process.NewProcess(int32(pid)); err == nil {
 						if cmdline, err := p.CmdlineSlice(); err == nil {
-							if exe, err := p.Exe(); err == nil && is_kitty_gui_cmdline(exe, cmdline...) {
+							if exe, err := p.Exe(); err == nil && is_alatty_gui_cmdline(exe, cmdline...) {
 								_ = p.SendSignal(unix.SIGUSR1)
 							}
 						}

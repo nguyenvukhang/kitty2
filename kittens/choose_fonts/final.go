@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"kitty/tools/config"
-	"kitty/tools/tui/loop"
-	"kitty/tools/utils"
+	"alatty/tools/config"
+	"alatty/tools/tui/loop"
+	"alatty/tools/utils"
 )
 
 var _ = fmt.Print
@@ -35,7 +35,7 @@ func (self *final_pane) draw_screen() (err error) {
 		"",
 		"What would you like to do?",
 		"",
-		fmt.Sprintf("%s to modify %s and use the new fonts", h("Enter"), s("italic", `kitty.conf`)),
+		fmt.Sprintf("%s to modify %s and use the new fonts", h("Enter"), s("italic", `alatty.conf`)),
 		"",
 		fmt.Sprintf("%s to abort and return to font selection", h("Esc")),
 		"",
@@ -78,17 +78,17 @@ func (self *final_pane) on_key_event(event *loop.KeyEvent) (err error) {
 	if event.MatchesPressOrRepeat("enter") {
 		event.Handled = true
 		patcher := config.Patcher{Write_backup: true}
-		path := filepath.Join(utils.ConfigDir(), "kitty.conf")
-		updated, err := patcher.Patch(path, "KITTY_FONTS", self.settings.serialized(), "font_family", "bold_font", "italic_font", "bold_italic_font")
+		path := filepath.Join(utils.ConfigDir(), "alatty.conf")
+		updated, err := patcher.Patch(path, "ALATTY_FONTS", self.settings.serialized(), "font_family", "bold_font", "italic_font", "bold_italic_font")
 		if err != nil {
 			return err
 		}
 		if updated {
 			switch self.handler.opts.Reload_in {
 			case "parent":
-				config.ReloadConfigInKitty(true)
+				config.ReloadConfigInAlatty(true)
 			case "all":
-				config.ReloadConfigInKitty(false)
+				config.ReloadConfigInAlatty(false)
 			}
 		}
 		self.lp.Quit(0)

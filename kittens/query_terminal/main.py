@@ -7,9 +7,9 @@ from binascii import hexlify, unhexlify
 from contextlib import suppress
 from typing import Dict, Optional, Type
 
-from kitty.constants import appname, str_version
-from kitty.options.types import Options
-from kitty.terminfo import names
+from alatty.constants import appname, str_version
+from alatty.options.types import Options
+from alatty.terminfo import names
 
 
 class Query:
@@ -20,7 +20,7 @@ class Query:
 
     @property
     def query_name(self) -> str:
-        return self.override_query_name or f'kitty-query-{self.name}'
+        return self.override_query_name or f'alatty-query-{self.name}'
 
     def __init__(self) -> None:
         self.encoded_query_name = hexlify(self.query_name.encode('utf-8')).decode('ascii')
@@ -83,7 +83,7 @@ class TerminalVersion(Query):
 @query
 class AllowHyperlinks(Query):
     name: str = 'allow_hyperlinks'
-    help_text: str = 'The config option :opt:`allow_hyperlinks` in :file:`kitty.conf` for allowing hyperlinks can be :code:`yes`, :code:`no` or :code:`ask`'
+    help_text: str = 'The config option :opt:`allow_hyperlinks` in :file:`alatty.conf` for allowing hyperlinks can be :code:`yes`, :code:`no` or :code:`ask`'
 
     @staticmethod
     def get_result(opts: Options, window_id: int, os_window_id: int) -> str:
@@ -97,7 +97,7 @@ class FontFamily(Query):
 
     @staticmethod
     def get_result(opts: Options, window_id: int, os_window_id: int) -> str:
-        from kitty.fast_data_types import current_fonts
+        from alatty.fast_data_types import current_fonts
         cf = current_fonts(os_window_id)
         return cf['medium'].postscript_name()
 
@@ -109,7 +109,7 @@ class BoldFont(Query):
 
     @staticmethod
     def get_result(opts: Options, window_id: int, os_window_id: int) -> str:
-        from kitty.fast_data_types import current_fonts
+        from alatty.fast_data_types import current_fonts
         cf = current_fonts(os_window_id)
         return cf['bold'].postscript_name()
 
@@ -121,7 +121,7 @@ class ItalicFont(Query):
 
     @staticmethod
     def get_result(opts: Options, window_id: int, os_window_id: int) -> str:
-        from kitty.fast_data_types import current_fonts
+        from alatty.fast_data_types import current_fonts
         cf = current_fonts(os_window_id)
         return cf['italic'].postscript_name()
 
@@ -133,7 +133,7 @@ class BiFont(Query):
 
     @staticmethod
     def get_result(opts: Options, window_id: int, os_window_id: int) -> str:
-        from kitty.fast_data_types import current_fonts
+        from alatty.fast_data_types import current_fonts
         cf = current_fonts(os_window_id)
         return cf['bi'].postscript_name()
 
@@ -145,7 +145,7 @@ class FontSize(Query):
 
     @staticmethod
     def get_result(opts: Options, window_id: int, os_window_id: int) -> str:
-        from kitty.fast_data_types import current_fonts
+        from alatty.fast_data_types import current_fonts
         cf = current_fonts(os_window_id)
         return f'{cf["font_sz_in_pts"]:g}'
 
@@ -156,7 +156,7 @@ class DpiX(Query):
 
     @staticmethod
     def get_result(opts: Options, window_id: int, os_window_id: int) -> str:
-        from kitty.fast_data_types import current_fonts
+        from alatty.fast_data_types import current_fonts
         cf = current_fonts(os_window_id)
         return f'{cf["logical_dpi_x"]:g}'
 
@@ -167,7 +167,7 @@ class DpiY(Query):
 
     @staticmethod
     def get_result(opts: Options, window_id: int, os_window_id: int) -> str:
-        from kitty.fast_data_types import current_fonts
+        from alatty.fast_data_types import current_fonts
         cf = current_fonts(os_window_id)
         return f'{cf["logical_dpi_y"]:g}'
 
@@ -179,7 +179,7 @@ class Foreground(Query):
 
     @staticmethod
     def get_result(opts: Options, window_id: int, os_window_id: int) -> str:
-        from kitty.fast_data_types import get_boss, get_options
+        from alatty.fast_data_types import get_boss, get_options
         boss = get_boss()
         w = boss.window_id_map.get(window_id)
         if w is None:
@@ -194,7 +194,7 @@ class Background(Query):
 
     @staticmethod
     def get_result(opts: Options, window_id: int, os_window_id: int) -> str:
-        from kitty.fast_data_types import get_boss, get_options
+        from alatty.fast_data_types import get_boss, get_options
         boss = get_boss()
         w = boss.window_id_map.get(window_id)
         if w is None:
@@ -209,7 +209,7 @@ class BackgroundOpacity(Query):
 
     @staticmethod
     def get_result(opts: Options, window_id: int, os_window_id: int) -> str:
-        from kitty.fast_data_types import background_opacity_of
+        from alatty.fast_data_types import background_opacity_of
         ans = background_opacity_of(os_window_id)
         if ans is None:
             ans = 1.0
@@ -219,7 +219,7 @@ class BackgroundOpacity(Query):
 @query
 class ClipboardControl(Query):
     name: str = 'clipboard_control'
-    help_text: str = 'The config option :opt:`clipboard_control` in :file:`kitty.conf` for allowing reads/writes to/from the clipboard'
+    help_text: str = 'The config option :opt:`clipboard_control` in :file:`alatty.conf` for allowing reads/writes to/from the clipboard'
 
     @staticmethod
     def get_result(opts: Options, window_id: int, os_window_id: int) -> str:
@@ -227,7 +227,7 @@ class ClipboardControl(Query):
 
 
 def get_result(name: str, window_id: int, os_window_id: int) -> Optional[str]:
-    from kitty.fast_data_types import get_options
+    from alatty.fast_data_types import get_options
     q = all_queries.get(name)
     if q is None:
         return None
@@ -255,7 +255,7 @@ The output is lines of the form::
 
     query: data
 
-If a particular :italic:`query` is unsupported by the running kitty version, the
+If a particular :italic:`query` is unsupported by the running alatty version, the
 :italic:`data` will be blank.
 
 Note that when calling this from another program, be very careful not to perform

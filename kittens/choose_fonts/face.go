@@ -9,10 +9,10 @@ import (
 	"strings"
 	"sync"
 
-	"kitty/tools/tui"
-	"kitty/tools/tui/loop"
-	"kitty/tools/utils"
-	"kitty/tools/wcswidth"
+	"alatty/tools/tui"
+	"alatty/tools/tui/loop"
+	"alatty/tools/utils"
+	"alatty/tools/wcswidth"
 )
 
 var _ = fmt.Print
@@ -233,7 +233,7 @@ func (self *handler) draw_preview_header(x int) {
 func (self *face_panel) render_preview(key faces_preview_key) {
 	var r map[string]RenderedSampleTransmit
 	s := key.settings
-	self.handler.set_worker_error(kitty_font_backend.query("render_family_samples", map[string]any{
+	self.handler.set_worker_error(alatty_font_backend.query("render_family_samples", map[string]any{
 		"text_style": self.handler.text_style, "font_family": s.font_family,
 		"bold_font": s.bold_font, "italic_font": s.italic_font, "bold_italic_font": s.bold_italic_font,
 		"width": key.width, "height": key.height, "output_dir": self.handler.temp_dir,

@@ -1,4 +1,4 @@
-#!./kitty/launcher/kitty +launch
+#!./alatty/launcher/alatty +launch
 # License: GPLv3 Copyright: 2022, Kovid Goyal <kovid at kovidgoyal.net>
 
 import argparse
@@ -24,26 +24,26 @@ from typing import (
     Union,
 )
 
-import kitty.constants as kc
+import alatty.constants as kc
 from kittens.tui.operations import Mode
 from kittens.tui.spinners import spinners
-from kitty.actions import get_all_actions
-from kitty.cli import (
+from alatty.actions import get_all_actions
+from alatty.cli import (
     CompletionSpec,
     GoOption,
     go_options_for_seq,
     parse_option_spec,
     serialize_as_go_string,
 )
-from kitty.conf.generate import gen_go_code
-from kitty.conf.types import Definition
-from kitty.guess_mime_type import known_extensions, text_mimes
-from kitty.key_encoding import config_mod_map
-from kitty.key_names import character_key_name_aliases, functional_key_name_aliases
-from kitty.options.types import Options
-from kitty.rc.base import RemoteCommand, all_command_names, command_for_name
-from kitty.remote_control import global_options_spec
-from kitty.rgb import color_names
+from alatty.conf.generate import gen_go_code
+from alatty.conf.types import Definition
+from alatty.guess_mime_type import known_extensions, text_mimes
+from alatty.key_encoding import config_mod_map
+from alatty.key_names import character_key_name_aliases, functional_key_name_aliases
+from alatty.options.types import Options
+from alatty.rc.base import RemoteCommand, all_command_names, command_for_name
+from alatty.remote_control import global_options_spec
+from alatty.rgb import color_names
 
 if __name__ == '__main__' and not __package__:
     import __main__
@@ -217,7 +217,7 @@ def generate_kittens_completion() -> None:
 
 @lru_cache
 def clone_safe_launch_opts() -> Sequence[GoOption]:
-    from kitty.launch import clone_safe_opts, options_spec
+    from alatty.launch import clone_safe_opts, options_spec
     ans = []
     allowed = clone_safe_opts()
     for o in go_options_for_seq(parse_option_spec(options_spec())[0]):
@@ -232,47 +232,47 @@ def completion_for_launch_wrappers(*names: str) -> None:
             print(o.as_option(name))
 
 
-def generate_completions_for_kitty() -> None:
+def generate_completions_for_alatty() -> None:
     print('package completion\n')
-    print('import "kitty/tools/cli"')
-    print('import "kitty/tools/cmd/tool"')
-    print('import "kitty/tools/cmd/at"')
+    print('import "alatty/tools/cli"')
+    print('import "alatty/tools/cmd/tool"')
+    print('import "alatty/tools/cmd/at"')
 
-    print('func kitty(root *cli.Command) {')
+    print('func alatty(root *cli.Command) {')
 
-    # The kitty exe
+    # The alatty exe
     print('k := root.AddSubCommand(&cli.Command{'
-          'Name:"kitty", SubCommandIsOptional: true, ArgCompleter: cli.CompleteExecutableFirstArg, SubCommandMustBeFirst: true })')
+          'Name:"alatty", SubCommandIsOptional: true, ArgCompleter: cli.CompleteExecutableFirstArg, SubCommandMustBeFirst: true })')
     print('kt := root.AddSubCommand(&cli.Command{Name:"kitten", SubCommandMustBeFirst: true })')
-    print('tool.KittyToolEntryPoints(kt)')
+    print('tool.AlattyToolEntryPoints(kt)')
     for opt in go_options_for_seq(parse_option_spec()[0]):
         print(opt.as_option('k'))
 
-    # kitty +
+    # alatty +
     print('plus := k.AddSubCommand(&cli.Command{Name:"+", Group:"Entry points", ShortDescription: "Various special purpose tools and kittens"})')
 
-    # kitty +launch
+    # alatty +launch
     print('plus_launch := plus.AddSubCommand(&cli.Command{'
           'Name:"launch", Group:"Entry points", ShortDescription: "Launch Python scripts", ArgCompleter: complete_plus_launch})')
     print('k.AddClone("", plus_launch).Name = "+launch"')
 
-    # kitty +list-fonts
+    # alatty +list-fonts
     print('plus_list_fonts := plus.AddSubCommand(&cli.Command{'
           'Name:"list-fonts", Group:"Entry points", ShortDescription: "List all available monospaced fonts"})')
     print('k.AddClone("", plus_list_fonts).Name = "+list-fonts"')
 
-    # kitty +runpy
+    # alatty +runpy
     print('plus_runpy := plus.AddSubCommand(&cli.Command{'
           'Name: "runpy", Group:"Entry points", ArgCompleter: complete_plus_runpy, ShortDescription: "Run Python code"})')
     print('k.AddClone("", plus_runpy).Name = "+runpy"')
 
-    # kitty +open
+    # alatty +open
     print('plus_open := plus.AddSubCommand(&cli.Command{'
           'Name:"open", Group:"Entry points", ArgCompleter: complete_plus_open, ShortDescription: "Open files and URLs"})')
     print('for _, og := range k.OptionGroups { plus_open.OptionGroups = append(plus_open.OptionGroups, og.Clone(plus_open)) }')
     print('k.AddClone("", plus_open).Name = "+open"')
 
-    # kitty +kitten
+    # alatty +kitten
     print('plus_kitten := plus.AddSubCommand(&cli.Command{Name:"kitten", Group:"Kittens", SubCommandMustBeFirst: true})')
     generate_kittens_completion()
     print('k.AddClone("", plus_kitten).Name = "+kitten"')
@@ -280,13 +280,13 @@ def generate_completions_for_kitty() -> None:
     # @
     print('at.EntryPoint(k)')
 
-    # clone-in-kitty, edit-in-kitty
-    print('cik := root.AddSubCommand(&cli.Command{Name:"clone-in-kitty"})')
+    # clone-in-alatty, edit-in-alatty
+    print('cik := root.AddSubCommand(&cli.Command{Name:"clone-in-alatty"})')
     completion_for_launch_wrappers('cik')
 
     print('}')
     print('func init() {')
-    print('cli.RegisterExeForCompletion(kitty)')
+    print('cli.RegisterExeForCompletion(alatty)')
     print('}')
 # }}}
 
@@ -427,12 +427,12 @@ def go_code_for_remote_command(name: str, cmd: RemoteCommand, template: str) -> 
 
 @lru_cache
 def wrapped_kittens() -> tuple[str, ...]:
-    with open('shell-integration/ssh/kitty') as f:
+    with open('shell-integration/ssh/alatty') as f:
         for line in f:
             if line.startswith('    wrapped_kittens="'):
                 val = line.strip().partition('"')[2][:-1]
                 return tuple(sorted(filter(None, val.split())))
-    raise Exception('Failed to read wrapped kittens from kitty wrapper script')
+    raise Exception('Failed to read wrapped kittens from alatty wrapper script')
 
 
 def generate_conf_parser(kitten: str, defn: Definition) -> None:
@@ -442,7 +442,7 @@ def generate_conf_parser(kitten: str, defn: Definition) -> None:
 
 
 def generate_extra_cli_parser(name: str, spec: str) -> None:
-    print('import "kitty/tools/cli"')
+    print('import "alatty/tools/cli"')
     go_opts = tuple(go_options_for_seq(parse_option_spec(spec)[0]))
     print(f'type {name}_options struct ''{')
     for opt in go_opts:
@@ -490,7 +490,7 @@ def kitten_clis() -> None:
             kcd = kitten_cli_docs(kitten)
             has_underscore = '_' in kitten
             print(f'package {kitten}')
-            print('import "kitty/tools/cli"')
+            print('import "alatty/tools/cli"')
             print('func create_cmd(root *cli.Command, run_func func(*cli.Command, *Options, []string)(int, error)) {')
             print('ans := root.AddSubCommand(&cli.Command{')
             print(f'Name: "{kitten}",')
@@ -572,7 +572,7 @@ SelectionBg: "{selbg}",
 
 
 def load_ref_map() -> dict[str, dict[str, str]]:
-    with open('kitty/docs_ref_map_generated.h') as f:
+    with open('alatty/docs_ref_map_generated.h') as f:
         raw = f.read()
     raw = raw.split('{', 1)[1].split('}', 1)[0]
     data = json.loads(bytes(bytearray(json.loads(f'[{raw}]'))))
@@ -582,13 +582,13 @@ def load_ref_map() -> dict[str, dict[str, str]]:
 def generate_constants() -> str:
     from kittens.hints.main import DEFAULT_REGEX
     from kittens.query_terminal.main import all_queries
-    from kitty.config import option_names_for_completion
-    from kitty.fast_data_types import FILE_TRANSFER_CODE
-    from kitty.options.utils import allowed_shell_integration_values, url_style_map
+    from alatty.config import option_names_for_completion
+    from alatty.fast_data_types import FILE_TRANSFER_CODE
+    from alatty.options.utils import allowed_shell_integration_values, url_style_map
     del sys.modules['kittens.hints.main']
     del sys.modules['kittens.query_terminal.main']
     ref_map = load_ref_map()
-    with open('kitty/data-types.h') as dt:
+    with open('alatty/data-types.h') as dt:
         m = re.search(r'^#define IMAGE_PLACEHOLDER_CHAR (\S+)', dt.read(), flags=re.M)
         assert m is not None
         placeholder_char = int(m.group(1), 16)
@@ -598,7 +598,7 @@ def generate_constants() -> str:
     url_style = {v:k for k, v in url_style_map.items()}[Options.url_style]
     query_names = ', '.join(f'"{name}"' for name in all_queries)
     return f'''\
-package kitty
+package alatty
 
 type VersionType struct {{
     Major, Minor, Patch int
@@ -626,7 +626,7 @@ var RefMap = map[string]string{serialize_go_dict(ref_map['ref'])}
 var DocTitleMap = map[string]string{serialize_go_dict(ref_map['doc'])}
 var AllowedShellIntegrationValues = []string{{ {str(sorted(allowed_shell_integration_values))[1:-1].replace("'", '"')} }}
 var QueryNames = []string{{ {query_names} }}
-var KittyConfigDefaults = struct {{
+var AlattyConfigDefaults = struct {{
 Term, Shell_integration, Select_by_word_characters, Url_excluded_characters, Shell string
 Wheel_scroll_multiplier int
 Url_prefixes []string
@@ -690,7 +690,7 @@ def update_at_commands() -> None:
     odef = '\n'.join(opt_def)
     code = f'''
 package at
-import "kitty/tools/cli"
+import "alatty/tools/cli"
 type rc_global_options struct {{
 {sdef}
 }}
@@ -705,20 +705,20 @@ func add_rc_global_opts(cmd *cli.Command) {{
 
 
 def update_completion() -> None:
-    with replace_if_needed('tools/cmd/completion/kitty_generated.go'):
-        generate_completions_for_kitty()
+    with replace_if_needed('tools/cmd/completion/alatty_generated.go'):
+        generate_completions_for_alatty()
 
-    with replace_if_needed('tools/cmd/at/kitty_actions_generated.go'):
+    with replace_if_needed('tools/cmd/at/alatty_actions_generated.go'):
         print("package at")
-        print("const KittyActionNames = `", end='')
+        print("const AlattyActionNames = `", end='')
         for grp, actions in get_all_actions().items():
             for ac in actions:
                 print(ac.name)
         print('`')
 
-    with replace_if_needed('tools/cmd/edit_in_kitty/launch_generated.go'):
-        print('package edit_in_kitty')
-        print('import "kitty/tools/cli"')
+    with replace_if_needed('tools/cmd/edit_in_alatty/launch_generated.go'):
+        print('package edit_in_alatty')
+        print('import "alatty/tools/cli"')
         print('func AddCloneSafeOpts(cmd *cli.Command) {')
         completion_for_launch_wrappers('cmd')
         print(''.join(CompletionSpec.from_string('type:file mime:text/* group:"Text files"').as_go_code('cmd.ArgCompleter', ' = ')))
@@ -850,7 +850,7 @@ def generate_unicode_names(src: TextIO, dest: BinaryIO) -> None:
 
 def generate_ssh_kitten_data() -> None:
     files = {
-        'terminfo/kitty.terminfo', 'terminfo/x/' + Options.term,
+        'terminfo/alatty.terminfo', 'terminfo/x/' + Options.term,
     }
     for dirpath, dirnames, filenames in os.walk('shell-integration'):
         for f in filenames:
