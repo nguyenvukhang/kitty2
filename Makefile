@@ -1,3 +1,6 @@
+current:
+	/opt/homebrew/opt/python/libexec/bin/python setup.py kitty.app
+
 ifdef V
 	VVAL=--verbose
 endif
@@ -68,4 +71,4 @@ prepare-for-cross-compile: clean all
 
 cross-compile:
 	python3 setup.py linux-package --skip-code-generation
-	
+
