@@ -571,14 +571,6 @@ SelectionBg: "{selbg}",
 '''
 
 
-def load_ref_map() -> dict[str, dict[str, str]]:
-    with open('alatty/docs_ref_map_generated.h') as f:
-        raw = f.read()
-    raw = raw.split('{', 1)[1].split('}', 1)[0]
-    data = json.loads(bytes(bytearray(json.loads(f'[{raw}]'))))
-    return data  # type: ignore
-
-
 def generate_constants() -> str:
     from kittens.hints.main import DEFAULT_REGEX
     from kittens.query_terminal.main import all_queries
@@ -587,7 +579,6 @@ def generate_constants() -> str:
     from alatty.options.utils import allowed_shell_integration_values, url_style_map
     del sys.modules['kittens.hints.main']
     del sys.modules['kittens.query_terminal.main']
-    ref_map = load_ref_map()
     with open('alatty/data-types.h') as dt:
         m = re.search(r'^#define IMAGE_PLACEHOLDER_CHAR (\S+)', dt.read(), flags=re.M)
         assert m is not None
@@ -622,8 +613,6 @@ var DefaultPager []string = []string{{ {dp} }}
 var FunctionalKeyNameAliases = map[string]string{serialize_go_dict(functional_key_name_aliases)}
 var CharacterKeyNameAliases = map[string]string{serialize_go_dict(character_key_name_aliases)}
 var ConfigModMap = map[string]uint16{serialize_go_dict(config_mod_map)}
-var RefMap = map[string]string{serialize_go_dict(ref_map['ref'])}
-var DocTitleMap = map[string]string{serialize_go_dict(ref_map['doc'])}
 var AllowedShellIntegrationValues = []string{{ {str(sorted(allowed_shell_integration_values))[1:-1].replace("'", '"')} }}
 var QueryNames = []string{{ {query_names} }}
 var AlattyConfigDefaults = struct {{

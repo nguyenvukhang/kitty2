@@ -41,51 +41,7 @@ def expand_opt_references(conf_name: str, text: str) -> str:
     return re.sub(r':opt:`(.+?)`', expand, text)
 
 
-@run_once
-def ref_map() -> Dict[str, Dict[str, str]]:
-    import json
-
-    from ..fast_data_types import get_docs_ref_map
-    ans: Dict[str, Dict[str, str]] = json.loads(get_docs_ref_map())
-    return ans
-
-
-def resolve_ref(ref: str, website_url: Callable[[str], str] = website_url) -> str:
-    m = ref_map()
-    href = m['ref'].get(ref, '')
-    prefix, rest = ref.partition('-')[::2]
-    if href:
-        pass
-    elif ref.startswith('conf-alatty-'):
-        href = f'conf#{ref}'
-    elif ref.startswith('conf-kitten-'):
-        parts = ref.split('-')
-        href = "kittens/" + parts[2] + f'/#{ref}'
-    elif ref.startswith('at_'):
-        base = ref.split('_', 1)[1]
-        href = "remote-control/#at-" + base.replace('_', '-')
-    elif ref.startswith('at-'):
-        base = ref.split('-', 1)[1]
-        href = "remote-control/#at-" + base.replace('_', '-')
-    elif ref.startswith('action-group-'):
-        href = f'actions/#{ref}'
-    elif prefix == 'action':
-        href = f'actions/#{rest.replace("_", "-")}'
-    elif prefix in ('term', 'envvar'):
-        href = 'glossary/#' + ref
-    elif prefix == 'doc':
-        href = rest.lstrip('/')
-    elif prefix in ('issues', 'pull', 'discussions'):
-        t, num = ref.partition(':')[::2]
-        href = f'https://github.com/kovidgoyal/alatty/{prefix}/{rest}'
-    if not (href.startswith('https://') or href.startswith('http://')):
-        href = website_url(href)
-    return href
-
-
 def remove_markup(text: str) -> str:
-
-    imap = {'iss': 'issues-', 'pull': 'pull-', 'disc': 'discussions-'}
 
     def extract(m: 'Match[str]') -> Tuple[str, str]:
         parts = m.group(2).split('<')
@@ -95,13 +51,6 @@ def remove_markup(text: str) -> str:
 
     def sub(m: 'Match[str]') -> str:
         key = m.group(1)
-        if key in ('ref', 'iss', 'pull', 'disc'):
-            t, q = extract(m)
-            q = imap.get(key, '') + q
-            url = resolve_ref(q)
-            if not url:
-                raise KeyError(f'Failed to resolve :{m.group(1)}: {q}')
-            return f'{t} <{url}>'
         if key == 'doc':
             t, q = extract(m)
             return f'{t} <{website_url(q)}>'

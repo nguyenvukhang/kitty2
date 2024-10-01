@@ -418,13 +418,6 @@ locale_is_valid(PyObject *self UNUSED, PyObject *args) {
     Py_RETURN_TRUE;
 }
 
-#include "docs_ref_map_generated.h"
-
-static PyObject*
-get_docs_ref_map(PyObject *self UNUSED, PyObject *args UNUSED) {
-    return PyBytes_FromStringAndSize(docs_ref_map, sizeof(docs_ref_map));
-}
-
 static PyObject*
 wrapped_kittens(PyObject *self UNUSED, PyObject *args UNUSED) {
     static const char *wrapped_kitten_names = WRAPPED_KITTENS;
@@ -609,7 +602,6 @@ static PyMethodDef module_methods[] = {
     METHODB(replace_c0_codes_except_nl_space_tab, METH_O),
     {"wcwidth", (PyCFunction)wcwidth_wrap, METH_O, ""},
     {"expand_ansi_c_escapes", (PyCFunction)expand_ansi_c_escapes, METH_O, ""},
-    {"get_docs_ref_map", (PyCFunction)get_docs_ref_map, METH_NOARGS, ""},
     {"wcswidth", (PyCFunction)wcswidth_std, METH_O, ""},
     {"unicode_database_version", (PyCFunction)unicode_database_version, METH_NOARGS, ""},
     {"open_tty", open_tty, METH_VARARGS, ""},
