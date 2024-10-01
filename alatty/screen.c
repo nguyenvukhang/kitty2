@@ -1017,23 +1017,6 @@ screen_dirty_line_graphics(Screen *self, const unsigned int top, const unsigned 
     if (need_to_remove)
         grman_remove_cell_images(main_buf ? self->main_grman : self->alt_grman, top, bottom);
 }
-
-void
-screen_handle_graphics_command(Screen *self, const GraphicsCommand *cmd) {
-    unsigned int x = self->cursor->x, y = self->cursor->y;
-    const char *response = grman_handle_command(self->grman, cmd, self->cursor, &self->is_dirty, self->cell_size);
-    if (response != NULL) write_escape_code_to_child(self, ESC_APC, response);
-    if (x != self->cursor->x || y != self->cursor->y) {
-        bool in_margins = cursor_within_margins(self);
-        if (self->cursor->x >= self->columns) { self->cursor->x = 0; self->cursor->y++; }
-        if (self->cursor->y > self->margin_bottom) screen_scroll(self, self->cursor->y - self->margin_bottom);
-        screen_ensure_bounds(self, false, in_margins);
-    }
-    if (cmd->unicode_placement) {
-        // Make sure the placeholders are redrawn if we add or change a virtual placement.
-        screen_dirty_line_graphics(self, 0, self->lines, self->linebuf == self->main_linebuf);
-    }
-}
 // }}}
 
 // Modes {{{

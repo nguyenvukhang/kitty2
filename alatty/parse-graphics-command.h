@@ -3,7 +3,7 @@
 #pragma once
 
 #include "base64.h"
-static inline void parse_graphics_code(PS *self, uint8_t *parser_buf,
+static inline void parse_graphics_code(uint8_t *parser_buf,
                                        const size_t parser_buf_pos) {
   unsigned int pos = 1;
   enum PARSER_STATES { KEY, EQUAL, UINT, INT, FLAG, AFTER_VALUE, PAYLOAD };
@@ -378,6 +378,4 @@ static inline void parse_graphics_code(PS *self, uint8_t *parser_buf,
       (int)g.z_index, "offset_from_parent_x", (int)g.offset_from_parent_x,
       "offset_from_parent_y", (int)g.offset_from_parent_y, "payload_sz",
       g.payload_sz, parser_buf, g.payload_sz);
-
-  screen_handle_graphics_command(self->screen, &g);
 }

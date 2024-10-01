@@ -158,7 +158,7 @@ static const int64_t digit_multipliers[] = {
 
 // Data structures {{{
 typedef enum VTEState {
-    VTE_NORMAL, VTE_ESC = ESC, VTE_CSI = ESC_CSI, VTE_OSC = ESC_OSC, VTE_DCS = ESC_DCS, VTE_APC = ESC_APC, VTE_PM = ESC_PM, VTE_SOS = ESC_SOS
+    VTE_NORMAL, VTE_ESC = ESC, VTE_CSI = ESC_CSI, VTE_OSC = ESC_OSC, VTE_DCS = ESC_DCS, VTE_PM = ESC_PM, VTE_SOS = ESC_SOS
 } VTEState;
 
 static inline const char*
@@ -169,7 +169,6 @@ vte_state_name(VTEState s) {
         case VTE_CSI: return "VTE_CSI";
         case VTE_OSC: return "VTE_OSC";
         case VTE_DCS: return "VTE_DCS";
-        case VTE_APC: return "VTE_APC";
         case VTE_PM: return "VTE_PM";
         case VTE_SOS: return "VTE_SOS";
     }
@@ -269,7 +268,6 @@ consume_esc(PS *self) {
             case ESC_DCS: SET_STATE(DCS); break;
             case ESC_OSC: SET_STATE(OSC); break;
             case ESC_CSI: SET_STATE(CSI); reset_csi(&self->csi); break;
-            case ESC_APC: SET_STATE(APC); break;
             case ESC_SOS: SET_STATE(SOS); break;
             case ESC_PM: SET_STATE(PM); break;
             IS_ESCAPED_CHAR:
@@ -1319,25 +1317,6 @@ dispatch_csi(PS *self) {
 
 // }}}
 
-// APC mode {{{
-
-#include "parse-graphics-command.h"
-
-static void
-dispatch_apc(PS *self, uint8_t *buf, size_t bufsz, bool is_extended UNUSED) {
-    if (bufsz < 2) return;
-    switch(buf[0]) {
-        case 'G':
-            parse_graphics_code(self, buf, bufsz);
-            break;
-        default:
-            REPORT_ERROR("Unrecognized APC code: 0x%x", buf[0]);
-            break;
-    }
-}
-
-// }}}
-
 // PM mode {{{
 static void
 dispatch_pm(PS *self UNUSED, uint8_t *buf, size_t bufsz, bool is_extended UNUSED) {
@@ -1387,8 +1366,6 @@ consume_input(PS *self, PyObject *dump_callback UNUSED, id_type window_id UNUSED
             break;
         case VTE_OSC:
             consume(osc);
-        case VTE_APC:
-            consume(apc);
         case VTE_PM:
             consume(pm);
         case VTE_DCS:
