@@ -730,26 +730,6 @@ set_mouse_cursor(MouseShape type) {
 
 static GLFWimage logo = {0};
 
-static PyObject*
-set_default_window_icon(PyObject UNUSED *self, PyObject *args) {
-    size_t sz;
-    unsigned int width, height;
-    const char *path;
-    uint8_t *data;
-    if(!PyArg_ParseTuple(args, "s", &path)) return NULL;
-    if (png_path_to_bitmap(path, &data, &width, &height, &sz)) {
-#ifndef __APPLE__
-        if (!global_state.is_wayland && (width > 128 || height > 128)) {
-            return PyErr_Format(PyExc_ValueError, "The window icon is too large (%dx%d). On X11 max window icon size is: 128x128. Create a file called ~/.config/alatty.app-128.png containing a 128x128 image to use as the window icon on X11.", width, height);
-        }
-#endif
-        logo.width = width; logo.height = height;
-        logo.pixels = data;
-    }
-    Py_RETURN_NONE;
-}
-
-
 void*
 make_os_window_context_current(OSWindow *w) {
     GLFWwindow *current_context = glfwGetCurrentContext();
@@ -2273,7 +2253,6 @@ static PyMethodDef module_methods[] = {
     METHODB(is_css_pointer_name_valid, METH_O),
     METHODB(pointer_name_to_css_name, METH_O),
     {"create_os_window", (PyCFunction)(void (*) (void))(create_os_window), METH_VARARGS | METH_KEYWORDS, NULL},
-    METHODB(set_default_window_icon, METH_VARARGS),
     METHODB(set_clipboard_data_types, METH_VARARGS),
     METHODB(get_clipboard_mime, METH_VARARGS),
     METHODB(toggle_secure_input, METH_NOARGS),

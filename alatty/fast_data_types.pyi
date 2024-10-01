@@ -633,10 +633,6 @@ def glfw_primary_monitor_size() -> Tuple[int, int]:
     pass
 
 
-def set_default_window_icon(path: str) -> None:
-    pass
-
-
 def set_custom_cursor(
     cursor_shape: str,
     images: Tuple[Tuple[bytes, int, int], ...],
@@ -648,10 +644,6 @@ def set_custom_cursor(
 
 def is_css_pointer_name_valid(name: str) -> bool: ...
 def pointer_name_to_css_name(name: str) -> str: ...
-
-
-def load_png_data(data: bytes) -> Tuple[bytes, int, int]:
-    pass
 
 
 def glfw_terminate() -> None:
@@ -682,16 +674,6 @@ def thread_write(fd: int, data: bytes) -> None:
 
 
 def set_ignore_os_keyboard_processing(yes: bool) -> None:
-    pass
-
-
-def set_background_image(
-    path: Optional[str],
-    os_window_ids: Tuple[int, ...],
-    configured: bool = True,
-    layout_name: Optional[str] = None,
-    png_data: bytes = b''
-) -> None:
     pass
 
 

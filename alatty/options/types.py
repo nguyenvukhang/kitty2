@@ -371,7 +371,6 @@ option_names = (  # {{{
  'linux_display_server',
  'listen_on',
  'macos_colorspace',
- 'macos_custom_beam_cursor',
  'macos_hide_from_tasks',
  'macos_menubar_title_max_length',
  'macos_option_as_alt',
@@ -542,7 +541,6 @@ class Options:
     linux_display_server: choices_for_linux_display_server = 'auto'
     listen_on: str = 'none'
     macos_colorspace: choices_for_macos_colorspace = 'srgb'
-    macos_custom_beam_cursor: bool = False
     macos_hide_from_tasks: bool = False
     macos_menubar_title_max_length: int = 0
     macos_option_as_alt: int = 0

@@ -76,12 +76,9 @@ find_or_create_window_logo(WindowLogoTable *head, const char *path, void *png_da
     if (!s) { PyErr_NoMemory(); return 0; }
     s->path = strdup(path);
     if (!s->path) { free(s); PyErr_NoMemory(); return 0; }
-    size_t size;
     bool ok = false;
     if (png_data == NULL || !png_data_size) {
         ok = image_path_to_bitmap(path, &s->wl.bitmap, &s->wl.width, &s->wl.height, &s->wl.mmap_size);
-    } else {
-        ok = png_from_data(png_data, png_data_size, path, &s->wl.bitmap, &s->wl.width, &s->wl.height, &size);
     }
     if (ok) s->wl.load_from_disk_ok = true;
     s->refcnt++;

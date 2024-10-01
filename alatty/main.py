@@ -18,7 +18,6 @@ from .conf.utils import BadLine
 from .config import cached_values_for
 from .constants import (
     appname,
-    beam_cursor_data_file,
     clear_handled_signals,
     config_dir,
     glfw_path,
@@ -26,7 +25,6 @@ from .constants import (
     is_wayland,
     kitten_exe,
     alatty_exe,
-    logo_png_file,
     running_in_alatty,
     website_url,
 )
@@ -38,10 +36,7 @@ from .fast_data_types import (
     free_font_data,
     glfw_init,
     glfw_terminate,
-    load_png_data,
     mask_alatty_signals_process_wide,
-    set_custom_cursor,
-    set_default_window_icon,
     set_options,
 )
 from .fonts.box_drawing import set_scale
@@ -63,21 +58,6 @@ from .utils import (
     shlex_split,
     startup_notification_handler,
 )
-
-
-def set_custom_ibeam_cursor() -> None:
-    with open(beam_cursor_data_file, 'rb') as f:
-        data = f.read()
-    rgba_data, width, height = load_png_data(data)
-    c2x = os.path.splitext(beam_cursor_data_file)
-    with open(f'{c2x[0]}@2x{c2x[1]}', 'rb') as f:
-        data = f.read()
-    rgba_data2, width2, height2 = load_png_data(data)
-    images = (rgba_data, width, height), (rgba_data2, width2, height2)
-    try:
-        set_custom_cursor("beam", images, 4, 8)
-    except Exception as e:
-        log_error(f'Failed to set custom beam cursor with error: {e}')
 
 
 def load_all_shaders(semi_transparent: bool = False) -> None:
@@ -153,21 +133,6 @@ def get_icon128_path(base_path: str) -> str:
     return f'{path}-128{ext}'
 
 
-def set_x11_window_icon() -> None:
-    custom_icon_path = get_custom_window_icon()[1]
-    try:
-        if custom_icon_path is not None:
-            custom_icon128_path = get_icon128_path(custom_icon_path)
-            if safe_mtime(custom_icon128_path) is None:
-                set_default_window_icon(custom_icon_path)
-            else:
-                set_default_window_icon(custom_icon128_path)
-        else:
-            set_default_window_icon(get_icon128_path(logo_png_file))
-    except ValueError as err:
-        log_error(err)
-
-
 def set_cocoa_global_shortcuts(opts: Options) -> dict[str, SingleKey]:
     global_shortcuts: dict[str, SingleKey] = {}
     if is_macos:
@@ -203,13 +168,9 @@ def set_cocoa_global_shortcuts(opts: Options) -> dict[str, SingleKey]:
 def _run_app(opts: Options, args: CLIOptions, bad_lines: Sequence[BadLine] = (), talk_fd: int = -1) -> None:
     if is_macos:
         global_shortcuts = set_cocoa_global_shortcuts(opts)
-        if opts.macos_custom_beam_cursor:
-            set_custom_ibeam_cursor()
         set_macos_app_custom_icon()
     else:
         global_shortcuts = {}
-        if not is_wayland():  # no window icons on wayland
-            set_x11_window_icon()
 
     with cached_values_for(run_app.cached_values_name) as cached_values:
         startup_sessions = tuple(create_sessions(opts, args, default_session=opts.startup_session))
