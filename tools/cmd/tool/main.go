@@ -8,7 +8,6 @@ import (
 	"alatty/kittens/ask"
 	"alatty/kittens/choose_fonts"
 	"alatty/kittens/clipboard"
-	"alatty/kittens/diff"
 	"alatty/kittens/icat"
 	"alatty/kittens/notify"
 	"alatty/kittens/query_terminal"
@@ -65,8 +64,6 @@ func AlattyToolEntryPoints(root *cli.Command) {
 	})
 	// ask
 	ask.EntryPoint(root)
-	// diff
-	diff.EntryPoint(root)
 	// notify
 	notify.EntryPoint(root)
 	// themes
