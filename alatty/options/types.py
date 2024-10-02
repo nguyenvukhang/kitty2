@@ -393,7 +393,6 @@ option_names = (  # {{{
  'mouse_map',
  'narrow_symbols',
  'notify_on_cmd_finish',
- 'open_url_with',
  'paste_actions',
  'placement_strategy',
  'pointer_shape_when_dragging',
@@ -558,7 +557,6 @@ class Options:
     mark3_foreground: Color = Color(0, 0, 0)
     mouse_hide_wait: float = 0.0 if is_macos else 3.0
     notify_on_cmd_finish: NotifyOnCmdFinish = NotifyOnCmdFinish(when='never', duration=5.0, action='notify', cmdline=())
-    open_url_with: typing.List[str] = ['default']
     paste_actions: typing.FrozenSet[str] = frozenset({'confirm', 'quote-urls-at-prompt'})
     placement_strategy: choices_for_placement_strategy = 'center'
     pointer_shape_when_dragging: choices_for_pointer_shape_when_dragging = 'beam'
@@ -873,8 +871,6 @@ defaults.map = [
     KeyDefinition(trigger=SingleKey(mods=256, key=57412), definition='change_font_size all -2.0'), 
     # reset_font_size
     KeyDefinition(trigger=SingleKey(mods=256, key=57347), definition='change_font_size all 0'), 
-    # open_url
-    KeyDefinition(trigger=SingleKey(mods=256, key=101), definition='open_url_with_hints'), 
     # insert_selected_path
     KeyDefinition(is_sequence=True, trigger=SingleKey(mods=256, key=112), rest=(SingleKey(key=102),), definition='kitten hints --type path --program -'), 
     # open_selected_path

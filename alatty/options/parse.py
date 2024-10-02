@@ -1130,9 +1130,6 @@ class Parser:
     def notify_on_cmd_finish(self, val: str, ans: typing.Dict[str, typing.Any]) -> None:
         ans['notify_on_cmd_finish'] = notify_on_cmd_finish(val)
 
-    def open_url_with(self, val: str, ans: typing.Dict[str, typing.Any]) -> None:
-        ans['open_url_with'] = to_cmdline(val)
-
     def paste_actions(self, val: str, ans: typing.Dict[str, typing.Any]) -> None:
         ans['paste_actions'] = paste_actions(val)
 

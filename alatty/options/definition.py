@@ -469,16 +469,6 @@ opt('url_style', 'curly',
     option_type='url_style', ctype='uint',
     )
 
-opt('open_url_with', 'default',
-    option_type='to_cmdline',
-    long_text='''
-The program to open clicked URLs. The special value :code:`default` will first
-look for any URL handlers defined via the :doc:`open_actions` facility and if
-non are found, it will use the Operating System's default URL handler
-(:program:`open` on macOS and :program:`xdg-open` on Linux).
-'''
-    )
-
 opt('url_prefixes', 'file ftp ftps gemini git gopher http https irc ircs alatty mailto news sftp ssh',
     option_type='url_prefixes', ctype='!url_prefixes',
     long_text='''
@@ -4068,14 +4058,6 @@ Use the hints kitten to select text and either pass it to an external program or
 insert it into the terminal or copy it to the clipboard.
 ''')
 
-map('Open URL',
-    'open_url alatty_mod+e open_url_with_hints',
-    long_text='''
-Open a currently visible URL using the keyboard. The program used to open the
-URL is specified in :opt:`open_url_with`.
-'''
-    )
-
 map('Insert selected path',
     'insert_selected_path alatty_mod+p>f kitten hints --type path --program -',
     long_text='''
@@ -4320,11 +4302,6 @@ Some more examples::
     # Run a command at a shell prompt (like typing the command and pressing Enter)
     map ctrl+alt+a send_text normal,application some command with arguments\\r
 '''
-    )
-
-map('Open alatty Website',
-    f'open_alatty_website shift+cmd+/ open_url {website_url()}',
-    only='macos',
     )
 
 map('Hide macOS alatty application',

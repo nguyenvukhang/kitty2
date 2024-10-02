@@ -159,9 +159,6 @@ def set_cocoa_global_shortcuts(opts: Options) -> dict[str, SingleKey]:
         val = get_macos_shortcut_for(func_map, 'load_config_file', lookup_name='reload_config')
         if val is not None:
             global_shortcuts['reload_config'] = val
-        val = get_macos_shortcut_for(func_map, f'open_url {website_url()}', lookup_name='open_alatty_website')
-        if val is not None:
-            global_shortcuts['open_alatty_website'] = val
     return global_shortcuts
 
 

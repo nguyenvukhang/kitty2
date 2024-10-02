@@ -2111,39 +2111,6 @@ class Boss:
         if tab:
             tab.set_active_window(window_id)
 
-    def open_alatty_website(self) -> None:
-        self.open_url(website_url())
-
-    @ac('misc', 'Open the specified URL')
-    def open_url(self, url: str, program: Optional[Union[str, list[str]]] = None, cwd: Optional[str] = None) -> None:
-        if not url:
-            return
-        if isinstance(program, str):
-            program = to_cmdline(program)
-        found_action = False
-        if program is None:
-            from .open_actions import actions_for_url
-            actions = list(actions_for_url(url))
-            if actions:
-                found_action = True
-                self.dispatch_action(actions.pop(0))
-                if actions:
-                    self.drain_actions(actions)
-        if not found_action:
-            extra_env = {}
-            if self.listening_on:
-                extra_env['ALATTY_LISTEN_ON'] = self.listening_on
-
-            def doit(activation_token: str = '') -> None:
-                if activation_token:
-                    extra_env['XDG_ACTIVATION_TOKEN'] = activation_token
-                open_url(url, program or get_options().open_url_with, cwd=cwd, extra_env=extra_env)
-
-            if is_wayland():
-                run_with_activation_token(doit)
-            else:
-                doit()
-
     @ac('misc', 'Sleep for the specified time period. Suffix can be s for seconds, m, for minutes, h for hours and d for days. The time can be fractional.')
     def sleep(self, sleep_time: float = 1.0) -> None:
         sleep(sleep_time)
