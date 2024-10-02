@@ -476,10 +476,6 @@ class DesktopIntegration:
     def notify(self, nc: NotificationCommand, existing_desktop_notification_id: Optional[int]) -> int:
         raise NotImplementedError('Implement me in subclass')
 
-    def on_new_version_notification_activation(self, cmd: NotificationCommand, which: int) -> None:
-        from .update_check import notification_activated
-        notification_activated()
-
     def payload_type_supported(self, x: PayloadType) -> bool:
         if x is PayloadType.body and not self.supports_body:
             return False
@@ -925,13 +921,6 @@ class NotificationManager:
             cmd.body = f'At: {now}'
             cmd.on_activation = print
             self.notify_with_command(cmd, w.id)
-
-    def send_new_version_notification(self, version: str) -> None:
-        cmd = self.create_notification_cmd()
-        cmd.title = 'alatty update available!'
-        cmd.body = f'alatty version {version} released'
-        cmd.on_activation = self.desktop_integration.on_new_version_notification_activation
-        self.notify_with_command(cmd, 0)
 
     def is_notification_allowed(self, cmd: NotificationCommand, channel_id: int, apply_filter_rules: bool = True) -> bool:
         if cmd.only_when is not OnlyWhen.always and cmd.only_when is not OnlyWhen.unset:

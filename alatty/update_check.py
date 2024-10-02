@@ -2,16 +2,14 @@
 # License: GPLv3 Copyright: 2019, Kovid Goyal <kovid at kovidgoyal.net>
 
 import os
-import subprocess
 import time
 from contextlib import suppress
-from typing import NamedTuple, Optional
+from typing import NamedTuple
 from urllib.request import urlopen
 
 from .config import atomic_save
-from .constants import Version, cache_dir, clear_handled_signals, alatty_exe, version, website_url
-from .fast_data_types import add_timer, get_boss, monitor_pid
-from .utils import log_error, open_url
+from .constants import Version, cache_dir, website_url
+from .utils import open_url
 
 CHANGELOG_URL = website_url('changelog')
 RELEASED_VERSION_URL = website_url() + 'current-version.txt'
@@ -33,10 +31,6 @@ def version_notification_log() -> str:
     if isinstance(override, str):
         return override
     return os.path.join(cache_dir(), 'new-version-notifications-1.txt')
-
-
-def notify_new_version(release_version: Version) -> None:
-    get_boss().notification_manager.send_new_version_notification('.'.join(map(str, release_version)))
 
 
 def get_released_version() -> str:
@@ -90,39 +84,9 @@ def save_notification(version: Version) -> None:
     atomic_save('\n'.join(lines).encode('utf-8'), version_notification_log())
 
 
-def process_current_release(raw: str) -> None:
-    release_version = Version(*tuple(map(int, raw.split('.'))))
-    if release_version > version and not already_notified(release_version):
-        save_notification(release_version)
-        notify_new_version(release_version)
-
-
 def run_worker() -> None:
     import random
     import time
     time.sleep(random.randint(1000, 4000) / 1000)
     with suppress(BrokenPipeError):  # happens if parent process is killed before us
         print(get_released_version())
-
-
-def update_check() -> bool:
-    try:
-        p = subprocess.Popen([
-            alatty_exe(), '+runpy',
-            'from alatty.update_check import run_worker; run_worker()'
-        ], stdout=subprocess.PIPE, preexec_fn=clear_handled_signals)
-    except Exception as e:
-        log_error(f'Failed to run alatty for update check, with error: {e}')
-        return False
-    monitor_pid(p.pid)
-    get_boss().set_update_check_process(p)
-    return True
-
-
-def update_check_callback(timer_id: Optional[int]) -> None:
-    update_check()
-
-
-def run_update_check(interval: float = CHECK_INTERVAL) -> None:
-    if update_check():
-        add_timer(update_check_callback, interval)
