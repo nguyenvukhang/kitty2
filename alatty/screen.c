@@ -3134,32 +3134,6 @@ error:
     return NULL;
 }
 
-
-bool
-screen_open_url(Screen *self) {
-    if (!self->url_ranges.count) return false;
-    hyperlink_id_type hid = hyperlink_id_for_range(self, self->url_ranges.items);
-    if (hid) {
-        const char *url = get_hyperlink_for_id(self->hyperlink_pool, hid, true);
-        if (url) {
-            CALLBACK("open_url", "sH", url, hid);
-            return true;
-        }
-    }
-    PyObject *text = current_url_text(self, NULL);
-    if (!text) {
-        if (PyErr_Occurred()) PyErr_Print();
-        return false;
-    }
-    bool found = false;
-    if (PyUnicode_Check(text)) {
-        CALLBACK("open_url", "OH", text, 0);
-        found = true;
-    }
-    Py_CLEAR(text);
-    return found;
-}
-
 // }}}
 
 // URLs {{{
