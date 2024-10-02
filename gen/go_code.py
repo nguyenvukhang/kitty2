@@ -572,12 +572,10 @@ SelectionBg: "{selbg}",
 
 
 def generate_constants() -> str:
-    from kittens.hints.main import DEFAULT_REGEX
     from kittens.query_terminal.main import all_queries
     from alatty.config import option_names_for_completion
     from alatty.fast_data_types import FILE_TRANSFER_CODE
     from alatty.options.utils import allowed_shell_integration_values, url_style_map
-    del sys.modules['kittens.hints.main']
     del sys.modules['kittens.query_terminal.main']
     with open('alatty/data-types.h') as dt:
         m = re.search(r'^#define IMAGE_PLACEHOLDER_CHAR (\S+)', dt.read(), flags=re.M)
@@ -604,7 +602,6 @@ var VCSRevision string = ""
 var IsFrozenBuild string = ""
 var IsStandaloneBuild string = ""
 const HandleTermiosSignals = {Mode.HANDLE_TERMIOS_SIGNALS.value[0]}
-const HintsDefaultRegex = `{DEFAULT_REGEX}`
 const DefaultTermName = `{Options.term}`
 const DefaultUrlStyle = `{url_style}`
 const DefaultUrlColor = `{Options.url_color.as_sharp}`

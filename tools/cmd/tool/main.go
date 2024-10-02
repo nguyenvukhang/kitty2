@@ -9,7 +9,6 @@ import (
 	"alatty/kittens/choose_fonts"
 	"alatty/kittens/clipboard"
 	"alatty/kittens/diff"
-	"alatty/kittens/hints"
 	"alatty/kittens/hyperlinked_grep"
 	"alatty/kittens/icat"
 	"alatty/kittens/notify"
@@ -69,8 +68,6 @@ func AlattyToolEntryPoints(root *cli.Command) {
 	hyperlinked_grep.EntryPoint(root)
 	// ask
 	ask.EntryPoint(root)
-	// hints
-	hints.EntryPoint(root)
 	// diff
 	diff.EntryPoint(root)
 	// notify
