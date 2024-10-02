@@ -1450,10 +1450,6 @@ def set_window_padding(os_window_id: int, tab_id: int, window_id: int, left: int
     pass
 
 
-def click_mouse_url(os_window_id: int, tab_id: int, window_id: int) -> bool:
-    pass
-
-
 def click_mouse_cmd_output(os_window_id: int, tab_id: int, window_id: int, select_cmd_output: bool) -> bool:
     pass
 

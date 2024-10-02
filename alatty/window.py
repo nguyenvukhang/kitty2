@@ -59,7 +59,6 @@ from .fast_data_types import (
     base64_decode,
     cell_size_for_window,
     click_mouse_cmd_output,
-    click_mouse_url,
     current_focused_os_window_id,
     encode_key_for_tty,
     get_boss,
@@ -1544,9 +1543,6 @@ class Window:
         for a in actions:
             if a == 'selection':
                 if self.screen.has_selection():
-                    break
-            if a == 'link':
-                if click_mouse_url(self.os_window_id, self.tab_id, self.id):
                     break
             if a == 'prompt':
                 # Do not send move cursor events too soon after the window is
