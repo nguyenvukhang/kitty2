@@ -462,19 +462,6 @@ add_press(Window *w, int button, int modifiers) {
 #undef N
 
 bool
-mouse_open_url(Window *w) {
-    Screen *screen = w->render_data.screen;
-    detect_url(screen, w->mouse_pos.cell_x, w->mouse_pos.cell_y);
-    return screen_open_url(screen);
-}
-
-bool
-mouse_set_last_visited_cmd_output(Window *w) {
-    Screen *screen = w->render_data.screen;
-    return screen_set_last_visited_prompt(screen, w->mouse_pos.cell_y);
-}
-
-bool
 mouse_select_cmd_output(Window *w) {
     Screen *screen = w->render_data.screen;
     return screen_select_cmd_output(screen, w->mouse_pos.cell_y);
