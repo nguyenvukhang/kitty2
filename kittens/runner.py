@@ -79,7 +79,6 @@ class KittenMetadata(NamedTuple):
     type_of_input: Optional[str] = None
     no_ui: bool = False
     has_ready_notification: bool = False
-    open_url_handler: Optional[Callable[[BossType, WindowType, str, int, str], bool]] = None
 
 
 
@@ -92,8 +91,7 @@ def create_kitten_handler(kitten: str, orig_args: List[str]) -> KittenMetadata:
         handle_result=partial(handle_result, [kitten] + orig_args),
         type_of_input=getattr(handle_result, 'type_of_input', None),
         no_ui=getattr(handle_result, 'no_ui', False),
-        has_ready_notification=getattr(handle_result, 'has_ready_notification', False),
-        open_url_handler=getattr(handle_result, 'open_url_handler', None))
+        has_ready_notification=getattr(handle_result, 'has_ready_notification', False))
 
 
 def set_debug(kitten: str) -> None:

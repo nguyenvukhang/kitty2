@@ -626,7 +626,6 @@ class Window:
         self.current_mouse_event_button = 0
         self.current_clipboard_read_ask: Optional[bool] = None
         self.last_cmd_output_start_time = 0.
-        self.open_url_handler: 'OpenUrlHandler' = None
         self.last_cmd_cmdline = ''
         self.last_cmd_exit_status = 0
         self.actions_on_close: list[Callable[['Window'], None]] = []
@@ -1104,12 +1103,6 @@ class Window:
 
     def open_url(self, url: str, hyperlink_id: int, cwd: Optional[str] = None) -> None:
         boss = get_boss()
-        try:
-            if self.open_url_handler and self.open_url_handler(boss, self, url, hyperlink_id, cwd or ''):
-                return
-        except Exception:
-            import traceback
-            traceback.print_exc()
         opts = get_options()
         if hyperlink_id:
             if not opts.allow_hyperlinks:
