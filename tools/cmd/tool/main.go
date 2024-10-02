@@ -10,7 +10,6 @@ import (
 	"alatty/kittens/clipboard"
 	"alatty/kittens/icat"
 	"alatty/kittens/notify"
-	"alatty/kittens/query_terminal"
 	"alatty/kittens/show_key"
 	"alatty/kittens/ssh"
 	"alatty/kittens/themes"
@@ -75,8 +74,6 @@ func AlattyToolEntryPoints(root *cli.Command) {
 	show_error.EntryPoint(root)
 	// choose-fonts
 	choose_fonts.EntryPoint(root)
-	// query-terminal
-	query_terminal.EntryPoint(root)
 	// __pytest__
 	pytest.EntryPoint(root)
 	// __hold_till_enter__

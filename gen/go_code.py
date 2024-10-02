@@ -572,11 +572,9 @@ SelectionBg: "{selbg}",
 
 
 def generate_constants() -> str:
-    from kittens.query_terminal.main import all_queries
     from alatty.config import option_names_for_completion
     from alatty.fast_data_types import FILE_TRANSFER_CODE
     from alatty.options.utils import allowed_shell_integration_values, url_style_map
-    del sys.modules['kittens.query_terminal.main']
     with open('alatty/data-types.h') as dt:
         m = re.search(r'^#define IMAGE_PLACEHOLDER_CHAR (\S+)', dt.read(), flags=re.M)
         assert m is not None
@@ -585,7 +583,6 @@ def generate_constants() -> str:
     url_prefixes = ','.join(f'"{x}"' for x in Options.url_prefixes)
     option_names = '`' + '\n'.join(option_names_for_completion()) + '`'
     url_style = {v:k for k, v in url_style_map.items()}[Options.url_style]
-    query_names = ', '.join(f'"{name}"' for name in all_queries)
     return f'''\
 package alatty
 
@@ -611,7 +608,6 @@ var FunctionalKeyNameAliases = map[string]string{serialize_go_dict(functional_ke
 var CharacterKeyNameAliases = map[string]string{serialize_go_dict(character_key_name_aliases)}
 var ConfigModMap = map[string]uint16{serialize_go_dict(config_mod_map)}
 var AllowedShellIntegrationValues = []string{{ {str(sorted(allowed_shell_integration_values))[1:-1].replace("'", '"')} }}
-var QueryNames = []string{{ {query_names} }}
 var AlattyConfigDefaults = struct {{
 Term, Shell_integration, Select_by_word_characters, Url_excluded_characters, Shell string
 Wheel_scroll_multiplier int
