@@ -58,7 +58,6 @@ from .fast_data_types import (
     add_window,
     base64_decode,
     cell_size_for_window,
-    click_mouse_cmd_output,
     current_focused_os_window_id,
     encode_key_for_tty,
     get_boss,
@@ -1583,22 +1582,6 @@ class Window:
         if txt:
             self.paste_with_actions(txt)
 
-    @ac('mouse', '''
-        Select clicked command output
-
-        Requires :ref:`shell_integration` to work
-        ''')
-    def mouse_select_command_output(self) -> None:
-        click_mouse_cmd_output(self.os_window_id, self.tab_id, self.id, True)
-
-    @ac('mouse', '''
-        Show clicked command output in a pager like less
-
-        Requires :ref:`shell_integration` to work
-        ''')
-    def mouse_show_command_output(self) -> None:
-        if click_mouse_cmd_output(self.os_window_id, self.tab_id, self.id, False):
-            self.show_cmd_output(CommandOutput.last_visited, 'Clicked command output')
     # }}}
 
     def text_for_selection(self, as_ansi: bool = False) -> str:

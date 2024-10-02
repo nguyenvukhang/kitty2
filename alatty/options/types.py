@@ -1019,8 +1019,6 @@ defaults.mouse_map = [
     MouseMapping(button=1, mods=1, grabbed=True, definition='mouse_selection extend'), 
     # extend_selection_grabbed
     MouseMapping(button=1, mods=1, definition='mouse_selection extend'), 
-    # show_clicked_cmd_output_ungrabbed
-    MouseMapping(button=1, mods=5, definition='mouse_show_command_output'), 
 ]
 
 nullable_colors = frozenset({

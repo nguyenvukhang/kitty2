@@ -838,11 +838,6 @@ mma('Select line from point even when grabbed',
 mma('Extend the current selection even when grabbed',
     'extend_selection_grabbed shift+right press ungrabbed,grabbed mouse_selection extend',
     )
-
-mma('Show clicked command output in pager',
-    'show_clicked_cmd_output_ungrabbed ctrl+shift+right press ungrabbed mouse_show_command_output',
-    long_text='Requires :ref:`shell integration <shell_integration>` to work.'
-    )
 egr()  # }}}
 egr()  # }}}
 
