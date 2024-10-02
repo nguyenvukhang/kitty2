@@ -45,9 +45,6 @@ def generate_stub() -> None:
     from kittens.show_key.main import OPTIONS
     do(OPTIONS(), 'ShowKeyCLIOptions')
 
-    from kittens.diff.main import OPTIONS
-    do(OPTIONS(), 'DiffCLIOptions')
-
     from kittens.broadcast.main import OPTIONS
     do(OPTIONS(), 'BroadcastCLIOptions')
 
@@ -60,14 +57,8 @@ def generate_stub() -> None:
     from kittens.resize_window.main import OPTIONS
     do(OPTIONS(), 'ResizeCLIOptions')
 
-    from kittens.unicode_input.main import OPTIONS
-    do(OPTIONS(), 'UnicodeCLIOptions')
-
     from kittens.themes.main import OPTIONS
     do(OPTIONS(), 'ThemesCLIOptions')
-
-    from kittens.transfer.main import option_text as OPTIONS
-    do(OPTIONS(), 'TransferCLIOptions')
 
     from alatty.rc.base import all_command_names, command_for_name
     for cmd_name in all_command_names():
