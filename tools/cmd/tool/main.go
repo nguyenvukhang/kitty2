@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"alatty/kittens/ask"
-	"alatty/kittens/choose_fonts"
 	"alatty/kittens/clipboard"
 	"alatty/kittens/icat"
 	"alatty/kittens/notify"
@@ -72,8 +71,6 @@ func AlattyToolEntryPoints(root *cli.Command) {
 	run_shell.EntryPoint(root)
 	// show_error
 	show_error.EntryPoint(root)
-	// choose-fonts
-	choose_fonts.EntryPoint(root)
 	// __pytest__
 	pytest.EntryPoint(root)
 	// __hold_till_enter__
