@@ -1,5 +1,9 @@
-current:
+current: khang_build open
+
+khang_build:
 	/opt/homebrew/opt/python/libexec/bin/python setup.py alatty.app
+
+open: 
 	./alatty.app/Contents/MacOS/alatty
 
 ifdef V
