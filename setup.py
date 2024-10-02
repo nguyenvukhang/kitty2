@@ -1102,7 +1102,6 @@ def build(args: Options, native_optimizations: bool = True, call_init: bool = Tr
         build_dsym=args.build_dsym,
     )
     compile_glfw(args.compilation_database, args.build_dsym)
-    compile_kittens(args)
     add_builtin_fonts(args)
 
 

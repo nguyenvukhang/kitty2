@@ -12,7 +12,6 @@ import (
 	"alatty/kittens/show_key"
 	"alatty/kittens/ssh"
 	"alatty/kittens/themes"
-	"alatty/kittens/transfer"
 	"alatty/kittens/unicode_input"
 	"alatty/tools/cli"
 	"alatty/tools/cmd/at"
@@ -45,8 +44,6 @@ func AlattyToolEntryPoints(root *cli.Command) {
 	icat.EntryPoint(root)
 	// ssh
 	ssh.EntryPoint(root)
-	// transfer
-	transfer.EntryPoint(root)
 	// unicode_input
 	unicode_input.EntryPoint(root)
 	// show_key
